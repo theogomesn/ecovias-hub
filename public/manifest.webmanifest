@@ -1,0 +1,11 @@
+{
+  "name": "Ecovias Hub · Conceito Sírius",
+  "short_name": "Ecovias Hub",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f4f7f4",
+  "theme_color": "#0b2a18",
+  "lang": "pt-BR",
+  "description": "Protótipo funcional do app de mobilidade e serviços rodoviários Ecovias.",
+  "icons": []
+}
