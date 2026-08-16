@@ -1,51 +1,64 @@
 # Roteiro de apresentação ao board
 
-## 1. Home
+## 1. Home e IA
 
-Mostrar que a IA já é a interface principal. Perguntar diretamente na Home:
+Mostrar que a IA é a interface principal. Começar pelos chips de perguntas rápidas e testar, por exemplo:
 
 "Onde tem banheiro mais próximo?"
 
-A resposta deve indicar a base de apoio e permitir seguir para Serviços.
+Depois demonstrar a entrada por texto/voz e a ação "Ouvir resposta".
 
-## 2. Assistente de viagem
+## 2. Assistente de Viagem
 
-Clicar em Assistente de viagem. A ação inicia o cenário São Paulo → Litoral caso nenhuma viagem esteja ativa.
+Mostrar primeiro o card Ativo na Home e explicar que o recurso acompanha o motorista dentro das concessões.
 
-Mostrar:
+Opcionalmente, pelo painel interno, desativar o assistente para demonstrar:
 
-- concessão atual
-- operação 5x5
-- condição do tráfego
-- eventos relevantes
+- estado Inativo
+- CTA Ativar assistente
+- tela de permissões
+- retorno à Home após confirmação
+
+## 3. Modo Viagem
+
+Abrir o Modo Viagem e mostrar a hierarquia:
+
+- condição de trânsito por cor
+- operação de faixas
+- previsão de viagem
+- pista
 - condição por trecho
+- próximos eventos na rota
+- ouvir condição e ouvir alertas
 
-## 3. Alertas
+## 4. Mudança de cenário
 
-Abrir Alertas para mostrar a visão consolidada das ocorrências relevantes da jornada.
+No painel de apresentação, alternar entre:
 
-## 4. Cenário de lentidão
+- São Paulo → Litoral normal
+- Lentidão entre km 61 e 63
+- Congestionamento simulado
 
-Abrir o painel de apresentação e selecionar "São Paulo → Litoral com lentidão".
+Demonstrar como o status muda de verde para laranja e vermelho sem alterar a estrutura da tela.
 
-Voltar ao Assistente de viagem ou Alertas e demonstrar a atualização do contexto.
+## 5. Alertas
 
-## 5. Pedágio
+Abrir a tela de Alertas e mostrar que ela funciona como central consolidada, enquanto o Modo Viagem prioriza o que é relevante para a jornada atual.
+
+## 6. Pedágio
 
 No painel, clicar em "Simular pedágio".
 
-O app deve exibir confirmação de pagamento e registrar a passagem no histórico de Pedágios.
+O app deve exibir confirmação do pagamento e registrar a passagem no histórico de Pedágios.
 
-## 6. Apoio 24h
+## 7. Apoio 24h
 
-Solicitar atendimento por pane.
-
-Mostrar a progressão automática:
+Solicitar atendimento por pane e mostrar a progressão automática:
 
 1. Solicitação recebida
 2. Equipe acionada
 3. Equipe a caminho
 
-## 7. Tese white-label
+## 8. Tese white-label
 
 No desktop, usar o painel lateral para explicar que a Ecovias é o primeiro tenant de um core que pode receber identidade, dados e integrações de outras concessionárias.

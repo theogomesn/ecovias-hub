@@ -8,6 +8,12 @@ const snapshotNormal = [
   { from: 9.7, to: 65, status: 'normal', reason: null, source: 'document' }
 ];
 
+const snapshotCongestion = [
+  { from: 9.7, to: 55, status: 'normal', reason: null, source: 'prototype' },
+  { from: 55, to: 59, status: 'congested', reason: 'Fluxo intenso e retenção', source: 'prototype' },
+  { from: 59, to: 65, status: 'slow', reason: 'Reflexo do congestionamento', source: 'prototype' }
+];
+
 const snapshotSlowdown = [
   { from: 9.7, to: 61, status: 'normal', reason: null, source: 'document' },
   { from: 61, to: 63, status: 'slow', reason: 'Excesso de veículos', source: 'document' },
@@ -32,7 +38,8 @@ export const roadData = {
   laneOperationSource: 'document',
   snapshots: {
     normal: snapshotNormal,
-    slowdown: snapshotSlowdown
+    slowdown: snapshotSlowdown,
+    congestion: snapshotCongestion
   },
   convoy: { active: false, source: 'document' },
   heavyVehicleRestriction: { active: true, road: 'Imigrantes', direction: 'São Paulo', segment: 'trecho específico', source: 'document' },

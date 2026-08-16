@@ -1,24 +1,32 @@
 # Ecovias Hub · status funcional
 
-Atualização de usabilidade concluída para a versão de apresentação.
+Rodada de usabilidade do Assistente de Viagem concluída para a versão de apresentação.
 
 ## Ajustes implementados
 
-- Assistente Ecovias incorporado diretamente à Home.
-- Animação de agente/voz na Home usando o GIF de referência fornecido.
-- Campo principal com texto, microfone e envio na mesma linha.
-- Acesso rápido reduzido a Assistente de viagem, Alertas e Serviços.
-- Tela única de Alertas adicionada.
-- Pedágios e Apoio permanecem no menu inferior.
-- Tipografia e textos auxiliares ampliados para melhorar legibilidade.
-- Selo "AO VIVO" removido da tela de viagem e substituído por "EM VIAGEM".
-- Linguagem de bastidor removida da experiência principal.
-- Contexto de demonstração unificado em São Paulo → Litoral/Santos.
-- Abrir modo viagem inicia automaticamente o cenário normal quando ainda não existe viagem ativa.
-- Simulação de pedágio gera confirmação visual, valor e atualização do histórico.
-- Apoio evolui automaticamente por Solicitação recebida, Equipe acionada e Equipe a caminho.
-- Painel de demo inicia fechado em telas mobile e aberto em desktop.
-- Manifest PWA completado com ícones 192 e 512 px e apple-touch-icon.
+- Assistente Ecovias permanece diretamente na Home.
+- Chips de perguntas rápidas adicionados na Home:
+  - Onde tem banheiro mais próximo?
+  - Qual posto mais próximo?
+  - Como está a pista?
+  - Quanto falta para o pedágio?
+  - Preciso de ajuda
+- Respostas do Assistente podem ser ouvidas por voz usando Speech Synthesis quando suportado pelo navegador.
+- Card do Assistente de Viagem passou a ter estados Ativo e Inativo com comunicação explicativa.
+- Estado Inativo direciona para uma tela de permissões com Localização, Notificações e Ativação nas concessões.
+- Modo Viagem reorganizado para leitura rápida durante a condução.
+- Condição de trânsito ganhou status visual verde, laranja e vermelho.
+- Operação de faixas, Previsão de viagem e Pista voltaram como indicadores compactos.
+- Condição por trecho passou a ser uma lista visual com código de cor.
+- Próximos eventos na rota foram ordenados por distância.
+- Eventos e alertas possuem ação "Ouvir alerta".
+- Cenário de congestionamento adicionado ao painel interno para demonstrar o estado vermelho.
+- Alertas continuam como tela separada e também oferecem leitura por voz.
+- Contexto de viagem permanece unificado em São Paulo → Litoral/Santos.
+- Pedágio mantém confirmação, valor processado e atualização do histórico.
+- Apoio mantém a progressão Solicitação recebida → Equipe acionada → Equipe a caminho.
+- Painel de demo permanece recolhido por padrão no mobile.
+- Figma continua sendo tratado apenas como wireframe funcional nesta etapa.
 
 ## Dados
 
@@ -27,5 +35,5 @@ Os dados documentais e os dados simulados continuam separados no código. A expe
 ## Validação
 
 - Testes de lógica do assistente: OK.
-- Validação de sintaxe dos módulos JavaScript: OK.
+- Parse de todos os módulos JS/JSX com TypeScript transpile: OK.
 - `npm install` não pôde ser concluído neste ambiente por timeout de acesso ao registry. Rode localmente `npm install`, `npm run test:logic` e `npm run build` antes de publicar.

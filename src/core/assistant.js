@@ -61,7 +61,7 @@ export function answerAssistant(query, context) {
   }
 
   if (q.includes('pista') || q.includes('anchieta') || q.includes('imigrantes') || q.includes('serra') || q.includes('transito')) {
-    const activeEvent = scenario.events.find(event => event.kind !== 'toll');
+    const activeEvent = scenario.events.find(event => event.kind === 'traffic' || event.kind === 'critical');
     if (activeEvent) {
       return { title: 'Condição da viagem', answer: `${activeEvent.title}. ${activeEvent.detail}. Operação ${scenario.operation}.`, action: { label: 'Ver Assistente de viagem', target: 'journey' }, provenance: activeEvent.source };
     }

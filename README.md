@@ -68,3 +68,8 @@ Consulte `PROJECT_STATUS.md` para o escopo concluído e `HANDOFF.md` para o chec
 ## Atualização de usabilidade
 
 A Home agora incorpora o Assistente Ecovias diretamente, com entrada por texto/voz, Assistente de viagem, Alertas e Serviços como acessos rápidos. O contexto da demo foi unificado em São Paulo → Litoral. Pedágios e Apoio possuem estados demonstráveis e o PWA inclui ícones de instalação. Consulte `HANDOFF.md` e `DEMO_SCRIPT.md`.
+
+
+## Atualização do Modo Viagem
+
+A Home agora oferece chips de perguntas rápidas e o Assistente de Viagem possui estados Ativo/Inativo com fluxo de permissões. O Modo Viagem prioriza condição de trânsito por cor, operação de faixas, previsão de viagem, pista, condição por trecho e próximos eventos com leitura por voz.
