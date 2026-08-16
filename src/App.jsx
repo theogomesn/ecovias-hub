@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ArrowLeft, ArrowRight, Bell, CarFront, Check, ChevronRight,
   CreditCard, LifeBuoy, MapPin, Menu, Navigation, ReceiptText,
@@ -27,8 +27,9 @@ function pickBrazilianVoice() {
   return ptBr.find(voice => preferredFemaleNames.test(voice.name)) || ptBr[0] || voices.find(voice => String(voice.lang || '').toLowerCase().startsWith('pt')) || null;
 }
 
-function speakText(text) {
-  if (typeof window === 'undefined' || !window.speechSynthesis) return;
+function speakText(text, callbacks = {}) {
+  if (typeof window === 'undefined' || !window.speechSynthesis) return null;
+  const { onStart, onEnd, onError } = callbacks;
   window.speechSynthesis.cancel();
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = 'pt-BR';
@@ -36,7 +37,14 @@ function speakText(text) {
   utterance.pitch = 1.04;
   const voice = pickBrazilianVoice();
   if (voice) utterance.voice = voice;
+  utterance.onstart = () => onStart?.();
+  utterance.onend = () => onEnd?.();
+  utterance.onerror = () => {
+    onError?.();
+    onEnd?.();
+  };
   window.speechSynthesis.speak(utterance);
+  return utterance;
 }
 
 function Header({ eyebrow, title, action }) {
@@ -70,10 +78,18 @@ function SendIcon() {
 }
 
 
-function AssistantComposer({ scenario, tollHistory, services, autoPay, setScreen, initialQuestion = '' }) {
+function AssistantComposer({ scenario, tollHistory, services, autoPay, setScreen, initialQuestion = '', onAgentStateChange = () => {}, onVoiceLevelChange = () => {} }) {
   const [query, setQuery] = useState('');
   const [listening, setListening] = useState(false);
   const [answer, setAnswer] = useState(null);
+  const mediaStreamRef = useRef(null);
+  const audioContextRef = useRef(null);
+  const analyserRef = useRef(null);
+  const animationFrameRef = useRef(null);
+  const meterDataRef = useRef(null);
+  const smoothedLevelRef = useRef(0);
+  const lastReportedLevelRef = useRef(0);
+  const voiceResultPendingRef = useRef(false);
   const speechSupported = typeof window !== 'undefined' && Boolean(window.SpeechRecognition || window.webkitSpeechRecognition);
   const suggestions = [
     'Preciso de ajuda',
@@ -83,36 +99,142 @@ function AssistantComposer({ scenario, tollHistory, services, autoPay, setScreen
     'Como está a pista?'
   ];
 
+  const stopAudioMeter = ({ keepAgentState = false } = {}) => {
+    if (animationFrameRef.current) {
+      window.cancelAnimationFrame(animationFrameRef.current);
+      animationFrameRef.current = null;
+    }
+    mediaStreamRef.current?.getTracks?.().forEach(track => track.stop());
+    mediaStreamRef.current = null;
+    if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
+      audioContextRef.current.close().catch(() => {});
+    }
+    audioContextRef.current = null;
+    analyserRef.current = null;
+    meterDataRef.current = null;
+    smoothedLevelRef.current = 0;
+    lastReportedLevelRef.current = 0;
+    onVoiceLevelChange(0);
+    if (!keepAgentState) onAgentStateChange('idle');
+  };
+
+  const startAudioMeter = async () => {
+    if (!navigator.mediaDevices?.getUserMedia) return false;
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } });
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass) {
+        stream.getTracks().forEach(track => track.stop());
+        return false;
+      }
+      const context = new AudioContextClass();
+      const source = context.createMediaStreamSource(stream);
+      const analyser = context.createAnalyser();
+      analyser.fftSize = 256;
+      analyser.smoothingTimeConstant = 0.72;
+      source.connect(analyser);
+      mediaStreamRef.current = stream;
+      audioContextRef.current = context;
+      analyserRef.current = analyser;
+      meterDataRef.current = new Uint8Array(analyser.fftSize);
+
+      const tick = () => {
+        const data = meterDataRef.current;
+        if (!analyserRef.current || !data) return;
+        analyserRef.current.getByteTimeDomainData(data);
+        let sumSquares = 0;
+        for (let index = 0; index < data.length; index += 1) {
+          const sample = (data[index] - 128) / 128;
+          sumSquares += sample * sample;
+        }
+        const rms = Math.sqrt(sumSquares / data.length);
+        const normalized = Math.max(0, Math.min(1, (rms - 0.018) / 0.15));
+        const smoothed = smoothedLevelRef.current * 0.72 + normalized * 0.28;
+        smoothedLevelRef.current = smoothed;
+        if (Math.abs(smoothed - lastReportedLevelRef.current) > 0.012 || smoothed === 0) {
+          lastReportedLevelRef.current = smoothed;
+          onVoiceLevelChange(smoothed);
+        }
+        onAgentStateChange(smoothed > 0.07 ? 'speaking' : 'listening');
+        animationFrameRef.current = window.requestAnimationFrame(tick);
+      };
+      tick();
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
   const ask = (value = query) => {
     if (!value.trim()) return;
     const response = answerAssistant(value, { services, road: roadData, scenario, tollHistory, autoPay, journey: journeyContext });
     setAnswer({ ...response, question: value });
     setQuery('');
+    onAgentStateChange('idle');
+    onVoiceLevelChange(0);
   };
 
   useEffect(() => {
     if (initialQuestion) ask(initialQuestion);
   }, [initialQuestion]);
 
-  const startVoice = () => {
+  useEffect(() => () => {
+    stopAudioMeter();
+    if (typeof window !== 'undefined' && window.speechSynthesis) window.speechSynthesis.cancel();
+  }, []);
+
+  const startVoice = async () => {
     if (!speechSupported || listening) return;
+    voiceResultPendingRef.current = false;
+    onAgentStateChange('listening');
+    await startAudioMeter();
     const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     const recognition = new Recognition();
     recognition.lang = 'pt-BR';
-    recognition.interimResults = false;
+    recognition.interimResults = true;
+    recognition.continuous = false;
     recognition.maxAlternatives = 1;
-    recognition.onstart = () => setListening(true);
-    recognition.onend = () => setListening(false);
-    recognition.onerror = () => setListening(false);
-    recognition.onresult = event => {
-      const spoken = event.results?.[0]?.[0]?.transcript || '';
-      setQuery(spoken);
-      if (spoken.trim()) ask(spoken);
+    recognition.onstart = () => {
+      setListening(true);
+      onAgentStateChange('listening');
     };
-    recognition.start();
+    recognition.onend = () => {
+      setListening(false);
+      stopAudioMeter({ keepAgentState: voiceResultPendingRef.current });
+      if (!voiceResultPendingRef.current) onAgentStateChange('idle');
+    };
+    recognition.onerror = () => {
+      voiceResultPendingRef.current = false;
+      setListening(false);
+      stopAudioMeter();
+    };
+    recognition.onresult = event => {
+      const result = event.results?.[event.results.length - 1];
+      const spoken = result?.[0]?.transcript || '';
+      setQuery(spoken);
+      if (!result?.isFinal || !spoken.trim()) return;
+      voiceResultPendingRef.current = true;
+      setListening(false);
+      stopAudioMeter({ keepAgentState: true });
+      onAgentStateChange('processing');
+      window.setTimeout(() => {
+        ask(spoken);
+        voiceResultPendingRef.current = false;
+      }, 420);
+    };
+    try {
+      recognition.start();
+    } catch {
+      setListening(false);
+      stopAudioMeter();
+    }
   };
 
-  const closeAnswer = () => setAnswer(null);
+  const closeAnswer = () => {
+    if (typeof window !== 'undefined' && window.speechSynthesis) window.speechSynthesis.cancel();
+    onAgentStateChange('idle');
+    setAnswer(null);
+  };
   const runAction = () => {
     if (!answer?.action?.target) return;
     const target = answer.action.target;
@@ -121,6 +243,11 @@ function AssistantComposer({ scenario, tollHistory, services, autoPay, setScreen
   };
   const spokenAnswer = answer ? [answer.title, answer.answer, answer.detail].filter(Boolean).join('. ') : '';
   const isAction = answer?.kind === 'action';
+  const hearResponse = () => speakText(spokenAnswer, {
+    onStart: () => onAgentStateChange('responding'),
+    onEnd: () => onAgentStateChange('idle'),
+    onError: () => onAgentStateChange('idle')
+  });
 
   return <>
     <div className="assistant-composer-wrap">
@@ -129,7 +256,7 @@ function AssistantComposer({ scenario, tollHistory, services, autoPay, setScreen
           value={query}
           onChange={event => setQuery(event.target.value)}
           onKeyDown={event => event.key === 'Enter' && ask()}
-          placeholder={`Pergunte à ${tenantConfig.shortName}`}
+          placeholder={listening ? 'Estou ouvindo...' : `Pergunte à ${tenantConfig.shortName}`}
           aria-label={`Pergunte à ${tenantConfig.shortName}`}
         />
         <div className="composer-buttons">
@@ -137,7 +264,7 @@ function AssistantComposer({ scenario, tollHistory, services, autoPay, setScreen
             className={`home-voice ${listening ? 'listening' : ''}`}
             onClick={startVoice}
             disabled={!speechSupported}
-            aria-label={speechSupported ? 'Perguntar por voz' : 'Entrada por voz não disponível'}
+            aria-label={speechSupported ? (listening ? 'Ouvindo sua voz' : 'Perguntar por voz') : 'Entrada por voz não disponível'}
           ><LocalIcon src={microphoneIcon} /></button>
           <button className="home-send" onClick={() => ask()} aria-label="Enviar pergunta"><SendIcon /></button>
         </div>
@@ -160,7 +287,7 @@ function AssistantComposer({ scenario, tollHistory, services, autoPay, setScreen
           </> : <>
             <h2>{answer.answer}</h2>
             {answer.detail && <p className="assistant-modal-detail">{answer.detail}</p>}
-            <button className="assistant-listen-button" onClick={() => speakText(spokenAnswer)}>
+            <button className="assistant-listen-button" onClick={hearResponse}>
               <LocalIcon src={volumeIcon} />
               <span>Ouvir resposta</span>
             </button>
@@ -174,7 +301,6 @@ function AssistantComposer({ scenario, tollHistory, services, autoPay, setScreen
     </div>}
   </>;
 }
-
 
 function AppHeader({ setScreen }) {
   return <header className="assistant-header">
@@ -207,6 +333,12 @@ function JourneyAssistantCard({ assistantEnabled, inConcession, startJourney, se
 }
 
 function Home({ setScreen, scenario, setScenarioId, tollHistory, services, autoPay, assistantEnabled, initialQuestion = '' }) {
+  const [agentState, setAgentState] = useState('idle');
+  const [voiceLevel, setVoiceLevel] = useState(0);
+  const haloScale = 1.035 + voiceLevel * 0.115;
+  const haloOpacity = 0.14 + voiceLevel * 0.52;
+  const haloBlur = 14 + voiceLevel * 26;
+
   const startJourney = () => {
     if (!assistantEnabled) {
       setScreen('permissions');
@@ -220,9 +352,22 @@ function Home({ setScreen, scenario, setScenarioId, tollHistory, services, autoP
 
   return <div className="assistant-home-screen">
     <AppHeader setScreen={setScreen} />
-    <div className="ai-agent-wrap-v6" aria-hidden="true"><img src={tenantConfig.brandAssets.aiAgent} alt="" /></div>
+    <div
+      className={`ai-agent-wrap-v6 agent-${agentState}`}
+      style={{ '--halo-scale': haloScale, '--halo-opacity': haloOpacity, '--halo-blur': `${haloBlur}px` }}
+      aria-hidden="true"
+    >
+      <span className="ai-agent-halo halo-outer" />
+      <span className="ai-agent-halo halo-inner" />
+      <span className="ai-agent-core"><img src={tenantConfig.brandAssets.aiAgent} alt="" /></span>
+    </div>
     <h1 className="hero-title-v6">Como podemos ajudar<br/>na sua viagem?</h1>
-    <AssistantComposer {...{ scenario, tollHistory, services, autoPay, setScreen }} initialQuestion={initialQuestion} />
+    <AssistantComposer
+      {...{ scenario, tollHistory, services, autoPay, setScreen }}
+      initialQuestion={initialQuestion}
+      onAgentStateChange={setAgentState}
+      onVoiceLevelChange={setVoiceLevel}
+    />
     <JourneyAssistantCard {...{ assistantEnabled, inConcession, startJourney, setScreen }} />
   </div>;
 }

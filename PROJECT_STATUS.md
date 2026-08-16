@@ -69,3 +69,14 @@ Os ícones exatos do layout são usados por URLs de exportação do Figma com fa
 - "Preciso de ajuda" agora é um fluxo de ação com CTA para Apoio 24h.
 - Respostas de banheiro, posto, pista e pedágio foram encurtadas para leitura rápida.
 - Adicionadas ações contextuais para Serviços, Pedágios e Modo Viagem.
+
+## V8 · Agente reativo por voz
+
+- O GIF do agente continua como núcleo visual.
+- O halo externo fica invisível em repouso.
+- Ao ativar o microfone, o halo entra no estado de escuta.
+- Durante a fala, Web Audio API + AnalyserNode medem a amplitude real e controlam escala, opacidade e glow do halo.
+- Após o fim da fala, o agente entra brevemente em estado de processamento.
+- Durante `speechSynthesis`, o halo usa uma pulsação de resposta enquanto a voz pt-BR estiver ativa.
+- O input muda temporariamente para `Estou ouvindo...` durante a captura de voz.
+- Se o navegador não permitir análise de amplitude, o reconhecimento de fala continua funcionando e o estado de escuta permanece como fallback visual.

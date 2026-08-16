@@ -63,3 +63,7 @@ Assets de marca locais:
 - `src/tenants/ecorodovias/images/ecovias-imigrantes/ai-agent.gif`
 
 A bottom navigation agora contém Assistente, Alertas, Apoio, Serviços e Pedágio. Minha Ecovias é acessada pelo ícone de perfil no header.
+
+## Interação de voz do agente
+
+A tela Assistente usa cinco estados visuais para a esfera: `idle`, `listening`, `speaking`, `processing` e `responding`. O estado `speaking` é controlado pela amplitude real do microfone via Web Audio API. O GIF permanece independente, permitindo trocar futuramente o núcleo por Rive/WebGL sem reescrever a máquina de estados.
