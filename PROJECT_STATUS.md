@@ -80,3 +80,7 @@ Os ícones exatos do layout são usados por URLs de exportação do Figma com fa
 - Durante `speechSynthesis`, o halo usa uma pulsação de resposta enquanto a voz pt-BR estiver ativa.
 - O input muda temporariamente para `Estou ouvindo...` durante a captura de voz.
 - Se o navegador não permitir análise de amplitude, o reconhecimento de fala continua funcionando e o estado de escuta permanece como fallback visual.
+
+### V9
+- Fixed mobile bottom navigation displacement while scrolling.
+- Restored persistent primary navigation on Minha Ecovias.

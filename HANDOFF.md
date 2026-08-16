@@ -67,3 +67,9 @@ A bottom navigation agora contém Assistente, Alertas, Apoio, Serviços e Pedág
 ## Interação de voz do agente
 
 A tela Assistente usa cinco estados visuais para a esfera: `idle`, `listening`, `speaking`, `processing` e `responding`. O estado `speaking` é controlado pela amplitude real do microfone via Web Audio API. O GIF permanece independente, permitindo trocar futuramente o núcleo por Rive/WebGL sem reescrever a máquina de estados.
+
+## V9 mobile navigation fix
+- Mobile bottom navigation is now a non-scrolling flex sibling of the content instead of a fixed/absolute overlay.
+- Only `.screen-content` scrolls on mobile, avoiding Chrome dynamic viewport jumps.
+- `Minha Ecovias` keeps the bottom navigation visible so the user can leave the account area through any primary tab.
+- Permissions remains the only flow without bottom navigation.

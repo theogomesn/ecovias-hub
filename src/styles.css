@@ -248,22 +248,25 @@ button,input,select{font-family:inherit}
 
 /* Existing interior screens adopt the new navigation safely. */
 .screen-content{padding-bottom:104px}
-.screen-account .screen-content{padding-bottom:24px}
-.screen-account .bottom-nav{display:none}
+.screen-account .screen-content{padding-bottom:104px}
 
 @media(max-width:760px){
+  html,body,#root{height:100%;overflow:hidden}
   body{background:#fff}
+  .app-shell,.device-wrap{height:100%;min-height:0}
   .device-wrap{width:100%;max-width:none}
-  .phone-screen{width:100%;max-width:none;height:100dvh;min-height:100dvh;border-radius:0;border:0;box-shadow:none}
-  .screen-home .assistant-screen-content{width:390px;max-width:100%;height:844px;min-height:844px;margin:0 auto;overflow:hidden}
-  .assistant-home-screen{width:390px;max-width:100%;height:844px;margin:0 auto}
-  .bottom-nav{position:absolute;width:100%;left:0;right:0;bottom:0}
-  .assistant-modal-layer{width:390px;max-width:100%;height:844px;left:50%;transform:translateX(-50%)}
+  .phone-screen{width:100%;max-width:none;height:100dvh;min-height:0;border-radius:0;border:0;box-shadow:none;overflow:hidden}
+  .screen-content{flex:1 1 auto;min-height:0;overflow-y:auto;padding-bottom:24px;overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch}
+  .screen-account .screen-content{padding-bottom:24px}
+  .screen-home .assistant-screen-content{width:390px;max-width:100%;height:auto;min-height:0;flex:1 1 auto;margin:0 auto;overflow-y:auto}
+  .assistant-home-screen{width:390px;max-width:100%;height:764px;min-height:764px;margin:0 auto}
+  .bottom-nav{position:relative;left:auto;right:auto;bottom:auto;width:100%;height:calc(80px + env(safe-area-inset-bottom));min-height:calc(80px + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);flex:0 0 calc(80px + env(safe-area-inset-bottom));z-index:100}
+  .assistant-modal-layer{position:fixed;inset:0;width:100%;max-width:none;height:100dvh;left:0;transform:none;z-index:150}
 }
 
 @media(max-width:389px){
   .assistant-home-screen{transform-origin:top left;transform:scale(calc(100vw / 390));width:390px}
-  .screen-home .assistant-screen-content{height:calc(844px * (100vw / 390));min-height:calc(844px * (100vw / 390))}
+  .screen-home .assistant-screen-content{height:auto;min-height:0}
 }
 .capture-mode .assistant-screen-content{padding:0!important;overflow:hidden!important}
 .capture-mode .screen-home .safe-area-top{display:none!important;height:0!important}
