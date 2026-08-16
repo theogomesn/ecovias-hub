@@ -1,7 +1,7 @@
 export const scenarios = {
   idle: {
     id: 'idle',
-    label: 'Fora da concessão',
+    label: 'Antes da viagem',
     description: 'Assistente pronto, sem viagem ativa.',
     journeyActive: false,
     operation: '5x5',
@@ -10,8 +10,8 @@ export const scenarios = {
   },
   normal: {
     id: 'normal',
-    label: 'Viagem normal',
-    description: 'Entrada na Ecovias Imigrantes usando o snapshot sem lentidão.',
+    label: 'São Paulo → Litoral',
+    description: 'Viagem ativa pelo Sistema Anchieta-Imigrantes com fluxo normal.',
     journeyActive: true,
     operation: '5x5',
     trafficSnapshot: 'normal',
@@ -21,36 +21,25 @@ export const scenarios = {
   },
   slowdown: {
     id: 'slowdown',
-    label: 'Lentidão Anchieta',
-    description: 'Reproduz o trecho dinâmico registrado no segundo snapshot.',
+    label: 'São Paulo → Litoral com lentidão',
+    description: 'Cenário de viagem com lentidão entre os km 61 e 63.',
     journeyActive: true,
     operation: '5x5',
     trafficSnapshot: 'slowdown',
     events: [
-      { id: 'slow', kind: 'traffic', distanceKm: 4, title: 'Lentidão entre km 61 e 63', detail: 'Excesso de veículos', severity: 'warning', source: 'document' },
+      { id: 'slow', kind: 'traffic', distanceKm: 4, title: 'Lentidão entre km 61 e 63', detail: 'Excesso de veículos', severity: 'warning', source: 'prototype' },
       { id: 'toll', kind: 'toll', distanceKm: 12, title: 'Pedágio à frente', detail: 'Pagamento automático configurado', severity: 'info', source: 'prototype' }
     ]
   },
   convoy: {
     id: 'convoy',
     label: 'Comboio na serra',
-    description: 'Cenário demonstrativo para um evento que existe no modelo de dados, mas estava inativo nos snapshots.',
+    description: 'Cenário de apresentação com comboio ativo durante a viagem ao Litoral.',
     journeyActive: true,
     operation: '7x3',
     trafficSnapshot: 'normal',
     events: [
       { id: 'convoy', kind: 'critical', distanceKm: 8, title: 'Comboio ativo na serra', detail: 'Siga as orientações operacionais', severity: 'critical', source: 'prototype' }
-    ]
-  },
-  cargo: {
-    id: 'cargo',
-    label: 'Restrição para pesados',
-    description: 'Demonstra o tratamento de uma informação crítica existente nos dados.',
-    journeyActive: true,
-    operation: '5x5',
-    trafficSnapshot: 'normal',
-    events: [
-      { id: 'cargo', kind: 'restriction', distanceKm: 6, title: 'Restrição para veículos pesados', detail: 'Imigrantes, sentido São Paulo', severity: 'critical', source: 'document' }
     ]
   }
 };

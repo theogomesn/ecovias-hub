@@ -1,51 +1,51 @@
 # Roteiro de apresentação ao board
 
-## 1. Começo
+## 1. Home
 
-Abrir com o cenário **Fora da concessão**.
+Mostrar que a IA já é a interface principal. Perguntar diretamente na Home:
 
-Mensagem principal: o app não exige que o motorista use um novo navegador. Ele concentra serviços, transações e inteligência da concessionária.
+"Onde tem banheiro mais próximo?"
 
-## 2. Entrada na concessão
+A resposta deve indicar a base de apoio e permitir seguir para Serviços.
 
-No painel de demo, selecionar **Viagem normal**.
+## 2. Assistente de viagem
 
-Abrir **Assistente de Viagem** e mostrar:
+Clicar em Assistente de viagem. A ação inicia o cenário São Paulo → Litoral caso nenhuma viagem esteja ativa.
 
-- Ecovias Imigrantes
-- operação vigente
-- contexto da rodovia
-- próximos eventos
+Mostrar:
 
-## 3. Dado operacional proprietário
+- concessão atual
+- operação 5x5
+- condição do tráfego
+- eventos relevantes
+- condição por trecho
 
-Trocar para **Lentidão Anchieta**.
+## 3. Alertas
 
-Mostrar o trecho documentado km 61–63 com excesso de veículos e explicar que a Ecovias oferece contexto operacional que complementa aplicativos de navegação.
+Abrir Alertas para mostrar a visão consolidada das ocorrências relevantes da jornada.
 
-## 4. IA como interface
+## 4. Cenário de lentidão
 
-Abrir **Assistente Ecovias** e perguntar:
+Abrir o painel de apresentação e selecionar "São Paulo → Litoral com lentidão".
 
-- Onde tem banheiro mais próximo?
-- Qual posto mais próximo?
-- Como está a pista?
-- Quanto falta para o pedágio?
+Voltar ao Assistente de viagem ou Alertas e demonstrar a atualização do contexto.
 
-Explicar que respostas documentais e simuladas são separadas no protótipo.
+## 5. Pedágio
 
-## 5. Pedágios
+No painel, clicar em "Simular pedágio".
 
-Abrir **Pedágios** e mostrar pagamento automático e histórico.
+O app deve exibir confirmação de pagamento e registrar a passagem no histórico de Pedágios.
 
-No painel de demo clicar **Simular pedágio**. A nova passagem entra imediatamente no histórico.
+## 6. Apoio 24h
 
-## 6. Apoio
+Solicitar atendimento por pane.
 
-Abrir **Apoio**, escolher um tipo de ocorrência e solicitar atendimento.
+Mostrar a progressão automática:
 
-Mostrar o estado de acompanhamento do chamado.
+1. Solicitação recebida
+2. Equipe acionada
+3. Equipe a caminho
 
-## 7. White-label
+## 7. Tese white-label
 
-Encerrar apontando que a interface Ecovias é apenas um tenant da plataforma. O core contém Assistente, Journey, Payments, Support e Services, podendo receber EPR, Arteris e outras concessões.
+No desktop, usar o painel lateral para explicar que a Ecovias é o primeiro tenant de um core que pode receber identidade, dados e integrações de outras concessionárias.

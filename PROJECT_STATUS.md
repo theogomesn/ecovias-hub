@@ -1,55 +1,31 @@
-# Status do protótipo
+# Ecovias Hub · status funcional
 
-## Escopo concluído nesta etapa
+Atualização de usabilidade concluída para a versão de apresentação.
 
-- Aplicação React/Vite funcional em estrutura white-label
-- Tenant inicial: Ecovias Imigrantes
-- Home utilitária
-- Assistente Ecovias determinístico, com entrada por texto e voz quando suportada pelo navegador
-- Assistente de Viagem com cenários controlados
-- Cenário normal baseado no snapshot sem lentidão
-- Cenário de lentidão baseado no snapshot documentado do km 61 ao 63
-- Cenários demonstrativos para comboio e mudança 7x3
-- Restrição de veículos pesados baseada na existência desse dado no conjunto analisado
-- Pedágios e pagamento automático demonstrativos
-- Histórico financeiro demonstrativo
-- Apoio 24h com abertura de chamado demonstrativa
-- Serviços próximos com filtros
-- Conta/veículo/tag demonstrativos
-- Painel de controle separado da interface do usuário para conduzir a apresentação
-- PWA básico com manifest e service worker
-- Configuração de build para Vite
-- Configuração pronta para deploy estático
-- Documentação de arquitetura, fontes e roteiro de apresentação
+## Ajustes implementados
 
-## Fora do escopo desta etapa
+- Assistente Ecovias incorporado diretamente à Home.
+- Animação de agente/voz na Home usando o GIF de referência fornecido.
+- Campo principal com texto, microfone e envio na mesma linha.
+- Acesso rápido reduzido a Assistente de viagem, Alertas e Serviços.
+- Tela única de Alertas adicionada.
+- Pedágios e Apoio permanecem no menu inferior.
+- Tipografia e textos auxiliares ampliados para melhorar legibilidade.
+- Selo "AO VIVO" removido da tela de viagem e substituído por "EM VIAGEM".
+- Linguagem de bastidor removida da experiência principal.
+- Contexto de demonstração unificado em São Paulo → Litoral/Santos.
+- Abrir modo viagem inicia automaticamente o cenário normal quando ainda não existe viagem ativa.
+- Simulação de pedágio gera confirmação visual, valor e atualização do histórico.
+- Apoio evolui automaticamente por Solicitação recebida, Equipe acionada e Equipe a caminho.
+- Painel de demo inicia fechado em telas mobile e aberto em desktop.
+- Manifest PWA completado com ícones 192 e 512 px e apple-touch-icon.
 
-- Layout final da concessão
-- Componentização visual definitiva no Figma
-- Integrações reais com APIs da EcoRodovias
-- LLM/RAG real
-- Pagamento real, cartão, tag ou Free Flow
-- Geolocalização real e geofencing
-- Sistemas reais de atendimento/guincho
-- CarPlay e Android Auto
-- Backend multi-tenant de produção
-- App nativo para App Store e Google Play
-- Publicação no GitHub e deploy no Netlify
+## Dados
 
-## Validações realizadas
+Os dados documentais e os dados simulados continuam separados no código. A experiência principal não exibe rótulos técnicos de proveniência. O painel de apresentação mantém essas informações para uso interno.
 
-- Sintaxe de todos os arquivos JS/JSX validada via transpile do TypeScript
-- Regras do assistente testadas por linha de comando para os principais intents
-- Distinção entre informação documental e conteúdo demonstrativo revisada
-- Cenário normal e cenário de lentidão separados de acordo com os dois snapshots analisados
+## Validação
 
-## Observação sobre o build nesta sessão
-
-O ambiente de execução não conseguiu alcançar o registry do npm por falha de DNS/rede (`EAI_AGAIN`), portanto `npm install` e `npm run build` não puderam ser executados aqui. O código foi validado sintaticamente e os módulos de lógica que não dependem de React foram executados com sucesso.
-
-No ambiente local ou no Netlify, rode:
-
-```bash
-npm install
-npm run build
-```
+- Testes de lógica do assistente: OK.
+- Validação de sintaxe dos módulos JavaScript: OK.
+- `npm install` não pôde ser concluído neste ambiente por timeout de acesso ao registry. Rode localmente `npm install`, `npm run test:logic` e `npm run build` antes de publicar.

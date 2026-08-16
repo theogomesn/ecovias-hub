@@ -14,12 +14,20 @@ const snapshotSlowdown = [
   { from: 63, to: 65, status: 'normal', reason: null, source: 'document' }
 ];
 
+export const journeyContext = {
+  origin: 'São Paulo',
+  destination: 'Santos',
+  direction: 'Litoral',
+  currentKm: 53,
+  source: 'prototype'
+};
+
 export const roadData = {
   id: 'sai',
   concession: 'Ecovias Imigrantes',
   system: 'Sistema Anchieta-Imigrantes',
   currentRoad: 'Anchieta',
-  direction: 'São Paulo',
+  sourceDirection: 'São Paulo',
   laneOperation: '5x5',
   laneOperationSource: 'document',
   snapshots: {
@@ -49,8 +57,8 @@ export const services = [
 ];
 
 export const tolls = [
-  { id: 'toll-demo-1', concession: 'Ecovias Imigrantes', plaza: 'Praça demonstrativa', amount: 22.3, date: '2026-08-12T18:10:00', source: 'prototype' },
-  { id: 'toll-demo-2', concession: 'Ecovias Imigrantes', plaza: 'Praça demonstrativa', amount: 22.3, date: '2026-08-09T10:24:00', source: 'prototype' }
+  { id: 'toll-demo-1', concession: 'Ecovias Imigrantes', plaza: 'Pedágio Ecovias', amount: 22.3, date: '2026-08-12T18:10:00', source: 'prototype' },
+  { id: 'toll-demo-2', concession: 'Ecovias Imigrantes', plaza: 'Pedágio Ecovias', amount: 22.3, date: '2026-08-09T10:24:00', source: 'prototype' }
 ];
 
 export const supportOptions = [

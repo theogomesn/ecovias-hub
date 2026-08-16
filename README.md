@@ -63,3 +63,8 @@ A evolução futura pode incluir `tenants/epr`, `tenants/arteris` etc. sem dupli
 ## Status e handoff
 
 Consulte `PROJECT_STATUS.md` para o escopo concluído e `HANDOFF.md` para o checklist de teste e apresentação.
+
+
+## Atualização de usabilidade
+
+A Home agora incorpora o Assistente Ecovias diretamente, com entrada por texto/voz, Assistente de viagem, Alertas e Serviços como acessos rápidos. O contexto da demo foi unificado em São Paulo → Litoral. Pedágios e Apoio possuem estados demonstráveis e o PWA inclui ícones de instalação. Consulte `HANDOFF.md` e `DEMO_SCRIPT.md`.
