@@ -60,3 +60,12 @@ A síntese de voz usa a API nativa do navegador e prioriza vozes `pt-BR` com nom
 
 ### Observação sobre ícones do Figma
 Os ícones exatos do layout são usados por URLs de exportação do Figma com fallback para `lucide-react`. As URLs do MCP são temporárias e devem ser localizadas antes de uma versão de produção de longo prazo. Para a demo imediata, o visual permanece fiel enquanto os assets estiverem válidos.
+
+## V7 · Correções de interface do Assistente
+- Corrigida duplicação visual de ícones causada por fallbacks renderizados junto aos assets do Figma.
+- Navegação inferior agora usa SVGs locais extraídos dos componentes do Figma.
+- Microfone, envio, volume e fechar usam assets SVG locais.
+- Modal da IA passou a ter altura adaptável e botão fechar fora do card, sem posicionamento fixo.
+- "Preciso de ajuda" agora é um fluxo de ação com CTA para Apoio 24h.
+- Respostas de banheiro, posto, pista e pedágio foram encurtadas para leitura rápida.
+- Adicionadas ações contextuais para Serviços, Pedágios e Modo Viagem.

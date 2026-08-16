@@ -1,11 +1,15 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
   ArrowLeft, ArrowRight, Bell, CarFront, Check, ChevronRight,
-  CreditCard, LifeBuoy, MapPin, Menu, Mic2, Navigation, ReceiptText,
+  CreditCard, LifeBuoy, MapPin, Menu, Navigation, ReceiptText,
   Search, Sparkles, TrafficCone, TriangleAlert, Volume2, WalletCards, Wrench, X
 } from 'lucide-react';
 import Screen from './components/Screen';
 import { tenantConfig } from './tenants/ecorodovias/config';
+import microphoneIcon from './tenants/ecorodovias/icons/microphone.svg';
+import sendIcon from './tenants/ecorodovias/icons/send.svg';
+import volumeIcon from './tenants/ecorodovias/icons/volume.svg';
+import closeIcon from './tenants/ecorodovias/icons/close.svg';
 import { journeyContext, roadData, services as baseServices, tolls as baseTolls, supportOptions, sourceNotes } from './tenants/ecorodovias/data';
 import { scenarios } from './demo/scenarios';
 import { answerAssistant } from './core/assistant';
@@ -44,12 +48,7 @@ function Header({ eyebrow, title, action }) {
 
 const FIGMA_ICONS = {
   profile: 'https://www.figma.com/api/mcp/asset/c4ac79b3-6f78-411e-9ada-e50d07ded6fd.svg',
-  menu: 'https://www.figma.com/api/mcp/asset/7225c279-9f84-4ed8-b31a-a2492872f87c.svg',
-  microphone: 'https://www.figma.com/api/mcp/asset/19093938-28d9-4c59-af0f-9232dbf5d718.svg',
-  sendOuter: 'https://www.figma.com/api/mcp/asset/e7b00519-e0c7-4289-a1b1-7d31248c9432.svg',
-  sendInner: 'https://www.figma.com/api/mcp/asset/63167b89-e4c4-42d9-8b81-6fc97b239f7c.svg',
-  volume: 'https://www.figma.com/api/mcp/asset/8856c168-e3c7-487d-afee-b1a3457792f4.svg',
-  close: 'https://www.figma.com/api/mcp/asset/c4f324a3-6540-4ab4-93ac-f9366655f55f.svg'
+  menu: 'https://www.figma.com/api/mcp/asset/7225c279-9f84-4ed8-b31a-a2492872f87c.svg'
 };
 
 function ExactIcon({ src, fallback, className = '' }) {
@@ -62,12 +61,14 @@ function ExactIcon({ src, fallback, className = '' }) {
   </span>;
 }
 
-function SendIcon() {
-  return <span className="send-icon-stack" aria-hidden="true">
-    <img src={FIGMA_ICONS.sendOuter} alt="" />
-    <img src={FIGMA_ICONS.sendInner} alt="" />
-  </span>;
+function LocalIcon({ src, className = '' }) {
+  return <span className={`exact-icon ${className}`} aria-hidden="true"><img src={src} alt="" /></span>;
 }
+
+function SendIcon() {
+  return <span className="send-icon-stack" aria-hidden="true"><img src={sendIcon} alt="" /></span>;
+}
+
 
 function AssistantComposer({ scenario, tollHistory, services, autoPay, setScreen, initialQuestion = '' }) {
   const [query, setQuery] = useState('');
@@ -111,13 +112,15 @@ function AssistantComposer({ scenario, tollHistory, services, autoPay, setScreen
     recognition.start();
   };
 
-  const isRestroomAnswer = Boolean(answer?.question?.toLowerCase().includes('banheiro'));
-  const modalTitle = isRestroomAnswer
-    ? 'O banheiro mais próximo fica na Base de apoio a 6 km.'
-    : answer?.answer;
-  const modalDetail = isRestroomAnswer
-    ? 'Atendimento 24h.\nAcessibilidade disponíveis.'
-    : answer?.title;
+  const closeAnswer = () => setAnswer(null);
+  const runAction = () => {
+    if (!answer?.action?.target) return;
+    const target = answer.action.target;
+    closeAnswer();
+    setScreen(target);
+  };
+  const spokenAnswer = answer ? [answer.title, answer.answer, answer.detail].filter(Boolean).join('. ') : '';
+  const isAction = answer?.kind === 'action';
 
   return <>
     <div className="assistant-composer-wrap">
@@ -135,7 +138,7 @@ function AssistantComposer({ scenario, tollHistory, services, autoPay, setScreen
             onClick={startVoice}
             disabled={!speechSupported}
             aria-label={speechSupported ? 'Perguntar por voz' : 'Entrada por voz não disponível'}
-          ><ExactIcon src={FIGMA_ICONS.microphone} fallback={<Mic2 size={22}/>} /></button>
+          ><LocalIcon src={microphoneIcon} /></button>
           <button className="home-send" onClick={() => ask()} aria-label="Enviar pergunta"><SendIcon /></button>
         </div>
       </div>
@@ -145,22 +148,33 @@ function AssistantComposer({ scenario, tollHistory, services, autoPay, setScreen
     </div>
 
     {answer && <div className="assistant-modal-layer" role="dialog" aria-modal="true" aria-label="Resposta do Assistente Ecovias">
-      <div className="assistant-modal-overlay" onClick={() => setAnswer(null)} />
-      <section className="assistant-answer-modal" aria-live="polite">
-        <p className="assistant-modal-question">{answer.question}</p>
-        <h2>{modalTitle}</h2>
-        <p className="assistant-modal-detail">{modalDetail}</p>
-        <button className="assistant-listen-button" onClick={() => speakText(`${modalTitle}. ${modalDetail}`)}>
-          <ExactIcon src={FIGMA_ICONS.volume} fallback={<Volume2 size={22}/>} />
-          <span>Ouvir resposta</span>
+      <div className="assistant-modal-overlay" onClick={closeAnswer} />
+      <div className="assistant-modal-dialog">
+        <section className={`assistant-answer-modal ${isAction ? 'action' : 'information'}`} aria-live="polite">
+          <p className="assistant-modal-question">{answer.question}</p>
+          {isAction ? <>
+            <h2>{answer.title}</h2>
+            <p className="assistant-action-body">{answer.answer}</p>
+            {answer.detail && <p className="assistant-modal-detail">{answer.detail}</p>}
+            <button className="assistant-primary-action" onClick={runAction}>{answer.action?.label || 'Continuar'}</button>
+          </> : <>
+            <h2>{answer.answer}</h2>
+            {answer.detail && <p className="assistant-modal-detail">{answer.detail}</p>}
+            <button className="assistant-listen-button" onClick={() => speakText(spokenAnswer)}>
+              <LocalIcon src={volumeIcon} />
+              <span>Ouvir resposta</span>
+            </button>
+            {answer.action && <button className="assistant-context-action" onClick={runAction}>{answer.action.label}</button>}
+          </>}
+        </section>
+        <button className="assistant-modal-close" onClick={closeAnswer} aria-label="Fechar resposta">
+          <LocalIcon src={closeIcon} />
         </button>
-      </section>
-      <button className="assistant-modal-close" onClick={() => setAnswer(null)} aria-label="Fechar resposta">
-        <ExactIcon src={FIGMA_ICONS.close} fallback={<X size={22}/>} />
-      </button>
+      </div>
     </div>}
   </>;
 }
+
 
 function AppHeader({ setScreen }) {
   return <header className="assistant-header">

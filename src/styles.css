@@ -165,6 +165,7 @@ button,input,select{font-family:inherit}
 .exact-icon{position:relative;display:inline-grid;place-items:center;width:22px;height:22px;flex:0 0 22px}
 .exact-icon>img{display:block;width:22px;height:22px;object-fit:contain}
 .exact-icon-fallback{width:22px;height:22px;display:grid;place-items:center;color:currentColor}
+.exact-icon-fallback[hidden],.figma-icon-fallback[hidden],[hidden]{display:none!important}
 
 .ai-agent-wrap-v6{position:absolute;left:50%;top:100px;transform:translateX(-50%);width:164px;height:164px;overflow:hidden;border-radius:50%;background:#fff}
 .ai-agent-wrap-v6 img{width:100%;height:100%;display:block;object-fit:cover}
@@ -205,14 +206,19 @@ button,input,select{font-family:inherit}
 .journey-primary-button{background:var(--surface-brand);border:0;color:#fff}
 
 /* AI answer state */
-.assistant-modal-layer{position:absolute;inset:0;width:390px;height:844px;z-index:70;pointer-events:auto}
+.assistant-modal-layer{position:absolute;inset:0;width:390px;height:844px;z-index:70;pointer-events:auto;overflow:hidden}
 .assistant-modal-overlay{position:absolute;inset:0;background:rgba(16,37,26,.8)}
-.assistant-answer-modal{position:absolute;left:24px;top:160px;width:342px;min-height:448px;padding:32px;border-radius:20px;background:var(--surface-brand);display:flex;flex-direction:column;align-items:center;gap:32px;color:#fff}
+.assistant-modal-dialog{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:88px 24px 76px;pointer-events:none}
+.assistant-answer-modal{width:342px;max-height:650px;padding:32px;border-radius:20px;background:var(--surface-brand);display:flex;flex-direction:column;align-items:center;gap:24px;color:#fff;overflow-y:auto;overscroll-behavior:contain;pointer-events:auto;box-shadow:0 20px 60px rgba(3,39,18,.22)}
 .assistant-modal-question{width:100%;margin:0;color:var(--surface-brand-accent);font-size:16px;line-height:24px;font-weight:400;text-align:center}
 .assistant-answer-modal h2{width:100%;margin:0;color:#fff;font-size:34px;line-height:44px;font-weight:600;text-align:center;letter-spacing:0}
-.assistant-modal-detail{width:100%;margin:0;color:#fff;font-size:12px;line-height:20px;font-weight:400;text-align:center;opacity:.5;white-space:pre-line}
-.assistant-listen-button{width:100%;height:48px;border:0;border-radius:26px;background:#fff;color:var(--surface-brand);display:flex;align-items:center;justify-content:center;gap:10px;padding:0 24px;font-size:13px;font-weight:600}
-.assistant-modal-close{position:absolute;left:170px;top:634px;width:50px;height:50px;padding:0;border:1px solid var(--border-default);border-radius:999px;background:#fff;color:var(--surface-brand);display:grid;place-items:center}
+.assistant-answer-modal.action h2{font-size:30px;line-height:38px}
+.assistant-action-body{width:100%;margin:0;color:#fff;font-size:16px;line-height:24px;font-weight:400;text-align:center}
+.assistant-modal-detail{width:100%;margin:0;color:#fff;font-size:12px;line-height:20px;font-weight:400;text-align:center;opacity:.58;white-space:pre-line}
+.assistant-listen-button,.assistant-primary-action{width:100%;height:48px;min-height:48px;border:0;border-radius:26px;background:#fff;color:var(--surface-brand);display:flex;align-items:center;justify-content:center;gap:10px;padding:0 24px;font-size:13px;font-weight:600}
+.assistant-primary-action{background:var(--surface-brand-accent);color:var(--text-primary)}
+.assistant-context-action{min-height:42px;border:1.5px solid rgba(255,255,255,.75);border-radius:24px;background:transparent;color:#fff;padding:0 22px;font-size:12px;font-weight:600}
+.assistant-modal-close{position:static;width:50px;height:50px;min-height:50px;padding:0;border:1px solid var(--border-default);border-radius:999px;background:#fff;color:var(--surface-brand);display:grid;place-items:center;flex:0 0 50px;pointer-events:auto;box-shadow:0 8px 24px rgba(3,39,18,.12)}
 
 /* Figma bottom navigation */
 .bottom-nav{position:absolute;left:0;right:0;bottom:0;width:390px;height:80px;border:0;border-top:1px solid #dfe7e2;background:var(--surface-subtle);backdrop-filter:none;border-radius:0;display:flex;align-items:center;justify-content:center;gap:4px;padding:0;box-shadow:none;z-index:30}
@@ -221,8 +227,6 @@ button,input,select{font-family:inherit}
 .bottom-nav button>span:last-child{display:block;width:52px;text-align:center}
 .figma-nav-icon{width:22px;height:22px;display:grid;place-items:center;flex:0 0 22px}
 .figma-nav-icon>img{display:block;width:22px;height:22px;object-fit:contain}
-.figma-icon-fallback{width:22px;height:22px;display:grid;place-items:center;color:currentColor}
-.figma-icon-fallback svg{width:22px;height:22px}
 
 /* Existing interior screens adopt the new navigation safely. */
 .screen-content{padding-bottom:104px}
