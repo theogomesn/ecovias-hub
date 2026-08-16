@@ -9,7 +9,7 @@ button,input,select{font:inherit}button{cursor:pointer}
 .app-shell{min-height:100vh;padding:40px;display:grid;grid-template-columns:minmax(280px,360px) minmax(360px,430px) minmax(280px,420px);justify-content:center;gap:36px;align-items:start;color:#10251a}
 .device-wrap{width:100%;max-width:430px;margin:auto;position:relative}
 .phone-screen{height:min(880px,calc(100vh - 80px));min-height:720px;background:#fff;border:1px solid #dfe6e1;border-radius:38px;box-shadow:0 24px 70px rgba(8,42,24,.15);overflow:hidden;display:flex;flex-direction:column;position:relative}
-.safe-area-top{height:32px;padding:14px 26px 0;display:flex;justify-content:space-between;font-size:11px;font-weight:700;color:#31463a;flex:0 0 auto}
+.safe-area-top{height:20px;padding:0;display:block;flex:0 0 auto}
 .screen-content{padding:18px 24px 98px;overflow-y:auto;scrollbar-width:none}
 .screen-content::-webkit-scrollbar{display:none}
 
@@ -24,9 +24,9 @@ button,input,select{font:inherit}button{cursor:pointer}
 .eyebrow{font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--brand);display:inline-block}
 .on-dark{color:var(--accent)}
 
-.ai-agent-wrap{width:108px;height:108px;margin:4px auto 2px;border-radius:50%;overflow:hidden;display:grid;place-items:center;background:#f6fbf7;box-shadow:0 16px 34px rgba(18,80,45,.08)}
+.ai-agent-wrap{width:108px;height:108px;margin:22px auto 18px;border-radius:50%;overflow:hidden;display:grid;place-items:center;background:#f6fbf7;box-shadow:0 16px 34px rgba(18,80,45,.08)}
 .ai-agent-wrap img{width:150%;height:150%;object-fit:cover;display:block}
-.hero-title{font-size:32px;line-height:1.08;margin:12px 0 18px;max-width:330px;letter-spacing:-.025em}
+.hero-title{font-size:32px;line-height:1.08;margin:0 0 18px;max-width:330px;letter-spacing:-.025em}
 
 .home-composer{width:100%;border:1px solid #dbe4de;background:#fff;border-radius:28px;padding:8px 9px 8px 18px;display:flex;align-items:center;gap:8px;box-shadow:0 6px 20px rgba(11,45,25,.04)}
 .home-composer input{min-width:0;flex:1;border:0;background:transparent;outline:none;color:#10251a;font-size:14px}
@@ -88,11 +88,11 @@ button,input,select{font:inherit}button{cursor:pointer}
 
 @media(max-width:1050px){.app-shell{grid-template-columns:330px minmax(360px,430px);padding:28px;gap:24px}.desktop-story{display:none}}
 @media(max-width:760px){
-  body{background:#fff}.app-shell{display:block;padding:0}.demo-panel{position:fixed;left:12px;right:12px;top:12px;z-index:20;max-height:75vh;overflow:auto;box-shadow:0 18px 70px rgba(7,34,19,.2)}.demo-panel.collapsed{left:auto;right:12px;top:calc(12px + env(safe-area-inset-top));width:58px;min-height:58px;padding:10px}.demo-panel.collapsed .demo-toggle{right:11px;top:11px}.device-wrap{max-width:none}.phone-screen{height:100dvh;min-height:100dvh;border:0;border-radius:0;box-shadow:none}.safe-area-top{padding-top:max(12px,env(safe-area-inset-top));height:calc(34px + env(safe-area-inset-top))}.screen-content{padding-left:20px;padding-right:20px;padding-bottom:calc(100px + env(safe-area-inset-bottom))}.bottom-nav{bottom:calc(10px + env(safe-area-inset-bottom));left:10px;right:10px}.desktop-story{display:none}.app-toast{bottom:calc(92px + env(safe-area-inset-bottom))}
+  body{background:#fff}.app-shell{display:block;padding:0}.demo-panel{position:fixed;left:12px;right:12px;top:12px;z-index:20;max-height:75vh;overflow:auto;box-shadow:0 18px 70px rgba(7,34,19,.2)}.demo-panel.collapsed{left:auto;right:12px;top:calc(12px + env(safe-area-inset-top));width:58px;min-height:58px;padding:10px}.demo-panel.collapsed .demo-toggle{right:11px;top:11px}.device-wrap{max-width:none}.phone-screen{height:100dvh;min-height:100dvh;border:0;border-radius:0;box-shadow:none}.safe-area-top{padding:0;height:max(12px,env(safe-area-inset-top))}.screen-content{padding-left:20px;padding-right:20px;padding-bottom:calc(100px + env(safe-area-inset-bottom))}.bottom-nav{bottom:calc(10px + env(safe-area-inset-bottom));left:10px;right:10px}.desktop-story{display:none}.app-toast{bottom:calc(92px + env(safe-area-inset-bottom))}
 }
 
 /* V3 UX refinement */
-.assistant-suggestions{display:flex;gap:8px;overflow-x:auto;padding:1px 0 10px;scrollbar-width:none;scroll-snap-type:x proximity}
+.assistant-suggestions{display:flex;gap:8px;overflow-x:auto;padding:12px 0 2px;scrollbar-width:none;scroll-snap-type:x proximity}
 .assistant-suggestions::-webkit-scrollbar{display:none}
 .assistant-suggestions button{flex:0 0 auto;scroll-snap-align:start;border:1px solid #dce5df;background:#fff;color:#425249;border-radius:999px;padding:9px 12px;font-size:11.5px;line-height:1.2;white-space:nowrap}
 .assistant-suggestions button:active{background:#eef8f0;border-color:#bcd8c4;color:var(--brand)}
@@ -124,3 +124,14 @@ button,input,select{font:inherit}button{cursor:pointer}
 .hero-title{text-align:center;margin-left:auto;margin-right:auto;max-width:330px}
 .quick-grid-two{grid-template-columns:repeat(2,minmax(0,1fr))}
 @media(max-width:380px){.concession-logo{width:min(190px,56vw)}.quick-grid-two{grid-template-columns:1fr 1fr}}
+
+
+/* Internal capture harness for Figma sync. Hidden from normal product usage. */
+html.figma-capture-page,html.figma-capture-page body,html.figma-capture-page #root{width:390px!important;min-width:390px!important;max-width:390px!important;height:844px!important;min-height:844px!important;max-height:844px!important;overflow:hidden!important;background:#fff!important}
+.app-shell.capture-mode{display:block!important;width:390px!important;min-width:390px!important;max-width:390px!important;height:844px!important;min-height:844px!important;padding:0!important;margin:0!important;background:#fff!important}
+.capture-mode .demo-panel,.capture-mode .desktop-story{display:none!important}
+.capture-mode .device-wrap{width:390px!important;max-width:390px!important;height:844px!important;margin:0!important}
+.capture-mode .phone-screen{width:390px!important;height:844px!important;min-height:844px!important;max-height:844px!important;border:0!important;border-radius:0!important;box-shadow:none!important}
+.capture-mode .safe-area-top{height:14px!important;padding:0!important}
+.capture-mode .screen-content{padding:18px 20px 98px!important}
+.capture-mode .bottom-nav{left:10px!important;right:10px!important;bottom:10px!important}

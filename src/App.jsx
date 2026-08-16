@@ -42,7 +42,7 @@ function Header({ eyebrow, title, action }) {
   </header>;
 }
 
-function AssistantComposer({ scenario, tollHistory, services, autoPay, setScreen }) {
+function AssistantComposer({ scenario, tollHistory, services, autoPay, setScreen, initialQuestion = '' }) {
   const [query, setQuery] = useState('');
   const [listening, setListening] = useState(false);
   const [answer, setAnswer] = useState(null);
@@ -61,6 +61,10 @@ function AssistantComposer({ scenario, tollHistory, services, autoPay, setScreen
     setAnswer({ ...response, question: value });
     setQuery('');
   };
+
+  useEffect(() => {
+    if (initialQuestion) ask(initialQuestion);
+  }, [initialQuestion]);
 
   const startVoice = () => {
     if (!speechSupported || listening) return;
@@ -81,9 +85,6 @@ function AssistantComposer({ scenario, tollHistory, services, autoPay, setScreen
   };
 
   return <>
-    <div className="assistant-suggestions" aria-label="Sugestões de perguntas">
-      {suggestions.map(item => <button key={item} onClick={() => ask(item)}>{item}</button>)}
-    </div>
     <div className="home-composer" role="search">
       <input
         value={query}
@@ -100,6 +101,9 @@ function AssistantComposer({ scenario, tollHistory, services, autoPay, setScreen
       ><Mic2 size={22}/></button>
       <button className="home-send" onClick={() => ask()} aria-label="Enviar pergunta"><ArrowRight size={22}/></button>
     </div>
+    <div className="assistant-suggestions" aria-label="Sugestões de perguntas">
+      {suggestions.map(item => <button key={item} onClick={() => ask(item)}>{item}</button>)}
+    </div>
     {answer && <section className="assistant-answer" aria-live="polite">
       <span className="assistant-question">{answer.question}</span>
       <strong>{answer.title}</strong>
@@ -112,7 +116,7 @@ function AssistantComposer({ scenario, tollHistory, services, autoPay, setScreen
   </>;
 }
 
-function Home({ setScreen, scenario, setScenarioId, tollHistory, services, autoPay, assistantEnabled }) {
+function Home({ setScreen, scenario, setScenarioId, tollHistory, services, autoPay, assistantEnabled, initialQuestion = '' }) {
   const startJourney = () => {
     if (!assistantEnabled) {
       setScreen('permissions');
@@ -128,7 +132,7 @@ function Home({ setScreen, scenario, setScenarioId, tollHistory, services, autoP
     <div className="brand-row"><img className="concession-logo" src={tenantConfig.brandAssets.concessionLogo} alt={tenantConfig.concessionName} /><button className="round" aria-label="Abrir menu"><Menu size={20}/></button></div>
     <div className="ai-agent-wrap" aria-hidden="true"><img src="/ai-agent.gif" alt="" /></div>
     <h1 className="hero-title">O que você precisa agora?</h1>
-    <AssistantComposer {...{ scenario, tollHistory, services, autoPay, setScreen }} />
+    <AssistantComposer {...{ scenario, tollHistory, services, autoPay, setScreen }} initialQuestion={initialQuestion} />
 
     <section className={`journey-assistant-card ${assistantEnabled ? 'active' : 'inactive'}`}>
       <div className="journey-card-label">
@@ -349,14 +353,39 @@ function DemoPanel({ scenarioId, setScenarioId, autoPay, setAutoPay, setTollHist
 }
 
 export default function App() {
-  const [screen, setScreen] = useState('home');
-  const [scenarioId, setScenarioId] = useState('normal');
+  const figmaPreset = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('figma') : null;
+  const preset = (() => {
+    const base = { screen: 'home', scenarioId: 'normal', assistantEnabled: true, initialQuestion: '', tollNotice: null, supportRequest: null };
+    if (!figmaPreset) return base;
+    const tollItem = { id: 'figma-toll', concession: tenantConfig.concessionName, plaza: 'Pedágio Ecovias', amount: 33.8, date: new Date().toISOString(), source: 'prototype' };
+    const map = {
+      'home-active': {},
+      'home-inactive': { assistantEnabled: false },
+      'home-answer': { initialQuestion: 'Onde tem banheiro mais próximo?' },
+      'permissions': { screen: 'permissions', assistantEnabled: false },
+      'journey-normal': { screen: 'journey', scenarioId: 'normal' },
+      'journey-slow': { screen: 'journey', scenarioId: 'slow' },
+      'journey-congested': { screen: 'journey', scenarioId: 'congested' },
+      'alerts': { screen: 'alerts', scenarioId: 'slow' },
+      'services': { screen: 'services' },
+      'tolls': { screen: 'tolls' },
+      'toll-success': { screen: 'tolls', tollNotice: tollItem },
+      'support': { screen: 'support' },
+      'support-received': { screen: 'support', supportRequest: { id: 'SUP-FIGMA', type: 'breakdown', status: 'Solicitação recebida', eta: '12 min', step: 1 } },
+      'support-on-route': { screen: 'support', supportRequest: { id: 'SUP-FIGMA', type: 'breakdown', status: 'Equipe a caminho', eta: '6 min', step: 3 } },
+      'account': { screen: 'account' }
+    };
+    return { ...base, ...(map[figmaPreset] || {}) };
+  })();
+
+  const [screen, setScreen] = useState(preset.screen);
+  const [scenarioId, setScenarioId] = useState(preset.scenarioId);
   const [autoPay, setAutoPay] = useState(true);
   const [tollHistory, setTollHistory] = useState(baseTolls);
-  const [tollNotice, setTollNotice] = useState(null);
-  const [supportRequest, setSupportRequest] = useState(null);
-  const [assistantEnabled, setAssistantEnabled] = useState(true);
-  const [permissions, setPermissions] = useState({ location: true, notifications: true, autoActivation: true });
+  const [tollNotice, setTollNotice] = useState(preset.tollNotice);
+  const [supportRequest, setSupportRequest] = useState(preset.supportRequest);
+  const [assistantEnabled, setAssistantEnabled] = useState(preset.assistantEnabled);
+  const [permissions, setPermissions] = useState({ location: preset.assistantEnabled, notifications: preset.assistantEnabled, autoActivation: preset.assistantEnabled });
   const scenario = scenarios[scenarioId];
   const services = baseServices;
 
@@ -377,7 +406,7 @@ export default function App() {
   }, [supportRequest?.step]);
 
   const content = useMemo(() => ({
-    home: <Home {...{ setScreen, scenario, setScenarioId, tollHistory, services, autoPay, assistantEnabled }} />,
+    home: <Home {...{ setScreen, scenario, setScenarioId, tollHistory, services, autoPay, assistantEnabled }} initialQuestion={preset.initialQuestion} />,
     journey: <Journey {...{ setScreen, scenario }} />,
     alerts: <Alerts {...{ setScreen, scenario }} />,
     permissions: <Permissions {...{ permissions, setPermissions, setAssistantEnabled, setScenarioId, setScreen }} /> ,
@@ -387,7 +416,13 @@ export default function App() {
     account: <Account autoPay={autoPay} />
   }), [screen, scenarioId, autoPay, tollHistory, tollNotice, supportRequest, assistantEnabled, permissions]);
 
-  return <div className="app-shell" style={{ '--brand': tenantConfig.theme.brand, '--dark': tenantConfig.theme.brandDark, '--accent': tenantConfig.theme.accent, '--bg': tenantConfig.theme.background }}>
+  useEffect(() => {
+    if (!figmaPreset) return undefined;
+    document.documentElement.classList.add('figma-capture-page');
+    return () => document.documentElement.classList.remove('figma-capture-page');
+  }, [figmaPreset]);
+
+  return <div className={`app-shell ${figmaPreset ? 'capture-mode' : ''}`} style={{ '--brand': tenantConfig.theme.brand, '--dark': tenantConfig.theme.brandDark, '--accent': tenantConfig.theme.accent, '--bg': tenantConfig.theme.background }}>
     <DemoPanel {...{ scenarioId, setScenarioId, autoPay, setAutoPay, setTollHistory, setTollNotice, supportRequest, setSupportRequest, assistantEnabled, setAssistantEnabled, setPermissions }} />
     <div className="device-wrap">
       <Screen screen={screen} setScreen={setScreen} noNav={screen === 'permissions'}>{content[screen]}</Screen>
