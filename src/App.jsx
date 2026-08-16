@@ -42,17 +42,44 @@ function Header({ eyebrow, title, action }) {
   </header>;
 }
 
+const FIGMA_ICONS = {
+  profile: 'https://www.figma.com/api/mcp/asset/c4ac79b3-6f78-411e-9ada-e50d07ded6fd.svg',
+  menu: 'https://www.figma.com/api/mcp/asset/7225c279-9f84-4ed8-b31a-a2492872f87c.svg',
+  microphone: 'https://www.figma.com/api/mcp/asset/19093938-28d9-4c59-af0f-9232dbf5d718.svg',
+  sendOuter: 'https://www.figma.com/api/mcp/asset/e7b00519-e0c7-4289-a1b1-7d31248c9432.svg',
+  sendInner: 'https://www.figma.com/api/mcp/asset/63167b89-e4c4-42d9-8b81-6fc97b239f7c.svg',
+  volume: 'https://www.figma.com/api/mcp/asset/8856c168-e3c7-487d-afee-b1a3457792f4.svg',
+  close: 'https://www.figma.com/api/mcp/asset/c4f324a3-6540-4ab4-93ac-f9366655f55f.svg'
+};
+
+function ExactIcon({ src, fallback, className = '' }) {
+  return <span className={`exact-icon ${className}`}>
+    <img src={src} alt="" onError={event => {
+      event.currentTarget.style.display = 'none';
+      event.currentTarget.nextElementSibling?.removeAttribute('hidden');
+    }}/>
+    <span hidden className="exact-icon-fallback">{fallback}</span>
+  </span>;
+}
+
+function SendIcon() {
+  return <span className="send-icon-stack" aria-hidden="true">
+    <img src={FIGMA_ICONS.sendOuter} alt="" />
+    <img src={FIGMA_ICONS.sendInner} alt="" />
+  </span>;
+}
+
 function AssistantComposer({ scenario, tollHistory, services, autoPay, setScreen, initialQuestion = '' }) {
   const [query, setQuery] = useState('');
   const [listening, setListening] = useState(false);
   const [answer, setAnswer] = useState(null);
   const speechSupported = typeof window !== 'undefined' && Boolean(window.SpeechRecognition || window.webkitSpeechRecognition);
   const suggestions = [
+    'Preciso de ajuda',
     'Onde tem banheiro mais próximo?',
-    'Qual posto mais próximo?',
-    'Como está a pista?',
     'Quanto falta para o pedágio?',
-    'Preciso de ajuda'
+    'Qual posto mais próximo?',
+    'Como está a pista?'
   ];
 
   const ask = (value = query) => {
@@ -84,36 +111,85 @@ function AssistantComposer({ scenario, tollHistory, services, autoPay, setScreen
     recognition.start();
   };
 
+  const isRestroomAnswer = Boolean(answer?.question?.toLowerCase().includes('banheiro'));
+  const modalTitle = isRestroomAnswer
+    ? 'O banheiro mais próximo fica na Base de apoio a 6 km.'
+    : answer?.answer;
+  const modalDetail = isRestroomAnswer
+    ? 'Atendimento 24h.\nAcessibilidade disponíveis.'
+    : answer?.title;
+
   return <>
-    <div className="home-composer" role="search">
-      <input
-        value={query}
-        onChange={event => setQuery(event.target.value)}
-        onKeyDown={event => event.key === 'Enter' && ask()}
-        placeholder={`Pergunte à ${tenantConfig.shortName}`}
-        aria-label={`Pergunte à ${tenantConfig.shortName}`}
-      />
-      <button
-        className={`home-voice ${listening ? 'listening' : ''}`}
-        onClick={startVoice}
-        disabled={!speechSupported}
-        aria-label={speechSupported ? 'Perguntar por voz' : 'Entrada por voz não disponível'}
-      ><Mic2 size={22}/></button>
-      <button className="home-send" onClick={() => ask()} aria-label="Enviar pergunta"><ArrowRight size={22}/></button>
-    </div>
-    <div className="assistant-suggestions" aria-label="Sugestões de perguntas">
-      {suggestions.map(item => <button key={item} onClick={() => ask(item)}>{item}</button>)}
-    </div>
-    {answer && <section className="assistant-answer" aria-live="polite">
-      <span className="assistant-question">{answer.question}</span>
-      <strong>{answer.title}</strong>
-      <p>{answer.answer}</p>
-      <div className="assistant-answer-actions">
-        <button onClick={() => speakText(`${answer.title}. ${answer.answer}`)}><Volume2 size={16}/> Ouvir resposta</button>
-        {answer.action && <button onClick={() => setScreen(answer.action.target)}>{answer.action.label}<ChevronRight size={17}/></button>}
+    <div className="assistant-composer-wrap">
+      <div className="home-composer" role="search">
+        <input
+          value={query}
+          onChange={event => setQuery(event.target.value)}
+          onKeyDown={event => event.key === 'Enter' && ask()}
+          placeholder={`Pergunte à ${tenantConfig.shortName}`}
+          aria-label={`Pergunte à ${tenantConfig.shortName}`}
+        />
+        <div className="composer-buttons">
+          <button
+            className={`home-voice ${listening ? 'listening' : ''}`}
+            onClick={startVoice}
+            disabled={!speechSupported}
+            aria-label={speechSupported ? 'Perguntar por voz' : 'Entrada por voz não disponível'}
+          ><ExactIcon src={FIGMA_ICONS.microphone} fallback={<Mic2 size={22}/>} /></button>
+          <button className="home-send" onClick={() => ask()} aria-label="Enviar pergunta"><SendIcon /></button>
+        </div>
       </div>
-    </section>}
+      <div className="assistant-suggestions" aria-label="Sugestões de perguntas">
+        {suggestions.map(item => <button key={item} onClick={() => ask(item)}>{item}</button>)}
+      </div>
+    </div>
+
+    {answer && <div className="assistant-modal-layer" role="dialog" aria-modal="true" aria-label="Resposta do Assistente Ecovias">
+      <div className="assistant-modal-overlay" onClick={() => setAnswer(null)} />
+      <section className="assistant-answer-modal" aria-live="polite">
+        <p className="assistant-modal-question">{answer.question}</p>
+        <h2>{modalTitle}</h2>
+        <p className="assistant-modal-detail">{modalDetail}</p>
+        <button className="assistant-listen-button" onClick={() => speakText(`${modalTitle}. ${modalDetail}`)}>
+          <ExactIcon src={FIGMA_ICONS.volume} fallback={<Volume2 size={22}/>} />
+          <span>Ouvir resposta</span>
+        </button>
+      </section>
+      <button className="assistant-modal-close" onClick={() => setAnswer(null)} aria-label="Fechar resposta">
+        <ExactIcon src={FIGMA_ICONS.close} fallback={<X size={22}/>} />
+      </button>
+    </div>}
   </>;
+}
+
+function AppHeader({ setScreen }) {
+  return <header className="assistant-header">
+    <button className="header-circle" onClick={() => setScreen('account')} aria-label="Abrir minha Ecovias">
+      <ExactIcon src={FIGMA_ICONS.profile} fallback={<CarFront size={22}/>} />
+    </button>
+    <img className="assistant-brand-logo" src={tenantConfig.brandAssets.concessionLogo} alt={tenantConfig.concessionName} />
+    <button className="header-circle" aria-label="Abrir menu">
+      <ExactIcon src={FIGMA_ICONS.menu} fallback={<Menu size={22}/>} />
+    </button>
+  </header>;
+}
+
+function JourneyAssistantCard({ assistantEnabled, inConcession, startJourney, setScreen }) {
+  if (!assistantEnabled) return <section className="journey-assistant-card-v6 inactive">
+    <div className="journey-card-label-v6"><span>ASSISTENTE DE VIAGEM</span><b>INATIVO</b></div>
+    <h2>O assistente de viagem está desativado.</h2>
+    <p>Ative para receber alertas oficiais durante seu trajeto pelas concessões EcoRodovias.</p>
+    <button className="journey-primary-button" onClick={() => setScreen('permissions')}>Ativar o assistente</button>
+  </section>;
+
+  return <section className="journey-assistant-card-v6 active">
+    <div className="journey-card-label-v6"><span>ASSISTENTE DE VIAGEM</span><b>ATIVO</b></div>
+    <h2>{inConcession ? <>Você está na<br/>{tenantConfig.concessionName}</> : 'Assistente pronto para a próxima viagem'}</h2>
+    <p>{inConcession
+      ? 'Receba alertas oficiais atualizados pela central de controle durante seu trajeto pela rodovia.'
+      : 'O assistente será ativado automaticamente quando sua viagem entrar em uma concessão EcoRodovias.'}</p>
+    <button className="journey-outline-button" onClick={startJourney}>Abrir modo viagem</button>
+  </section>;
 }
 
 function Home({ setScreen, scenario, setScenarioId, tollHistory, services, autoPay, assistantEnabled, initialQuestion = '' }) {
@@ -128,32 +204,13 @@ function Home({ setScreen, scenario, setScenarioId, tollHistory, services, autoP
 
   const inConcession = assistantEnabled && scenario.journeyActive;
 
-  return <>
-    <div className="brand-row"><img className="concession-logo" src={tenantConfig.brandAssets.concessionLogo} alt={tenantConfig.concessionName} /><button className="round" aria-label="Abrir menu"><Menu size={20}/></button></div>
-    <div className="ai-agent-wrap" aria-hidden="true"><img src="/ai-agent.gif" alt="" /></div>
-    <h1 className="hero-title">O que você precisa agora?</h1>
+  return <div className="assistant-home-screen">
+    <AppHeader setScreen={setScreen} />
+    <div className="ai-agent-wrap-v6" aria-hidden="true"><img src={tenantConfig.brandAssets.aiAgent} alt="" /></div>
+    <h1 className="hero-title-v6">Como podemos ajudar<br/>na sua viagem?</h1>
     <AssistantComposer {...{ scenario, tollHistory, services, autoPay, setScreen }} initialQuestion={initialQuestion} />
-
-    <section className={`journey-assistant-card ${assistantEnabled ? 'active' : 'inactive'}`}>
-      <div className="journey-card-label">
-        <span>ASSISTENTE DE VIAGEM {tenantConfig.shortName.toUpperCase()}</span>
-        <b>{assistantEnabled ? 'ATIVO' : 'INATIVO'}</b>
-      </div>
-      <h2>{assistantEnabled ? (inConcession ? `Você está na ${tenantConfig.concessionName}` : 'Assistente pronto para a próxima viagem') : 'O assistente de viagem está desligado'}</h2>
-      <p>{assistantEnabled
-        ? 'Receba durante seu trajeto informações oficiais sobre operação da rodovia, condições da pista, alertas e eventos atualizados pela central de controle da concessionária.'
-        : 'Ative para receber durante seu trajeto informações oficiais sobre operação da rodovia, condições da pista, alertas e eventos das concessões EcoRodovias.'}</p>
-      <button onClick={assistantEnabled ? startJourney : () => setScreen('permissions')}>
-        {assistantEnabled ? 'Abrir modo viagem' : 'Ativar assistente'}
-      </button>
-    </section>
-
-    <h3 className="section-title home-quick-title">Acesso rápido</h3>
-    <div className="quick-grid quick-grid-two">
-      <button onClick={() => setScreen('alerts')}><span><Bell/></span><strong>Alertas</strong><small>Condições e ocorrências</small></button>
-      <button onClick={() => setScreen('services')}><span><MapPin/></span><strong>Serviços</strong><small>Posto, banheiro e mais</small></button>
-    </div>
-  </>;
+    <JourneyAssistantCard {...{ assistantEnabled, inConcession, startJourney, setScreen }} />
+  </div>;
 }
 
 function Journey({ setScreen, scenario }) {
@@ -169,7 +226,7 @@ function Journey({ setScreen, scenario }) {
   const hearEvent = event => speakText(`Atenção. ${event.title}. ${event.detail}.`);
 
   return <>
-    <button className="back" onClick={() => setScreen('home')}><ArrowLeft size={20}/> Início</button>
+    <button className="back" onClick={() => setScreen('home')}><ArrowLeft size={20}/> Assistente</button>
     <section className="road-hero compact">
       <span className="eyebrow on-dark">{tenantConfig.concessionName.toUpperCase()}</span><span className="trip-pill">EM VIAGEM</span>
       <h1>Assistente de viagem ativo</h1>
@@ -212,7 +269,7 @@ function Alerts({ setScreen, scenario }) {
   ].sort((a, b) => a.distanceKm - b.distanceKm);
 
   return <>
-    <button className="back" onClick={() => setScreen('home')}><ArrowLeft size={20}/> Início</button>
+    <button className="back" onClick={() => setScreen('home')}><ArrowLeft size={20}/> Assistente</button>
     <Header eyebrow="SUA VIAGEM" title="Alertas" />
     <section className="alerts-summary">
       <Bell size={22}/>
@@ -425,7 +482,7 @@ export default function App() {
   return <div className={`app-shell ${figmaPreset ? 'capture-mode' : ''}`} style={{ '--brand': tenantConfig.theme.brand, '--dark': tenantConfig.theme.brandDark, '--accent': tenantConfig.theme.accent, '--bg': tenantConfig.theme.background }}>
     <DemoPanel {...{ scenarioId, setScenarioId, autoPay, setAutoPay, setTollHistory, setTollNotice, supportRequest, setSupportRequest, assistantEnabled, setAssistantEnabled, setPermissions }} />
     <div className="device-wrap">
-      <Screen screen={screen} setScreen={setScreen} noNav={screen === 'permissions'}>{content[screen]}</Screen>
+      <Screen screen={screen} setScreen={setScreen} noNav={screen === 'permissions' || screen === 'account'}>{content[screen]}</Screen>
       {tollNotice && <div className="app-toast" aria-live="polite"><span className="toast-check"><Check size={18}/></span><div><strong>Pedágio processado</strong><small>{money(tollNotice.amount)} · pagamento automático</small></div></div>}
     </div>
     <div className="desktop-story"><span className="eyebrow">SÍRIUS MOBILITY PLATFORM · TENANT ECOVIAS</span><h2>Um core, múltiplas concessões.</h2><p>Este build valida a arquitetura funcional white-label. A camada visual definitiva pode ser aplicada por concessão depois da validação do produto.</p><div className="capabilities"><span>IA</span><span>Assistente de Viagem</span><span>Pedágios</span><span>Apoio</span><span>Serviços</span></div></div>

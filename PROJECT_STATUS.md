@@ -46,3 +46,17 @@ Os assets visuais ficam dentro do tenant. Para a Ecovias Imigrantes, a logo est�
 A síntese de voz usa a API nativa do navegador e prioriza vozes `pt-BR` com nomes femininos conhecidos quando disponíveis. Como o conjunto de vozes depende do sistema operacional e do navegador, existe fallback automático para outra voz brasileira.
 
 - Home refinada: sem status bar fictícia, maior respiro do agente IA e chips de sugestões posicionados após o campo de pergunta.
+
+## Atualização visual V6 · Figma
+
+- Tela principal renomeada conceitualmente para Assistente.
+- Home ativa e inativa sincronizadas com os frames Figma 313:2599 e 308:51.
+- Estado de resposta da IA sincronizado com o frame 308:99, usando modal com overlay, leitura por voz e fechamento.
+- Navegação inferior alterada para Assistente, Alertas, Apoio, Serviços e Pedágio, seguindo o componente 316:3468.
+- Conta passa a ser acessada pelo botão de perfil no header.
+- Nova animação do agente aplicada a partir do GIF fornecido para Ecovias Imigrantes.
+- Logo e animação ficam isoladas em `src/tenants/ecorodovias/images/ecovias-imigrantes/` para facilitar white-label.
+- Fluxos funcionais existentes de viagem, pedágio, apoio, serviços e modo demo foram preservados.
+
+### Observação sobre ícones do Figma
+Os ícones exatos do layout são usados por URLs de exportação do Figma com fallback para `lucide-react`. As URLs do MCP são temporárias e devem ser localizadas antes de uma versão de produção de longo prazo. Para a demo imediata, o visual permanece fiel enquanto os assets estiverem válidos.

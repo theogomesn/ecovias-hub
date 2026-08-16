@@ -47,3 +47,19 @@ Os assets visuais ficam dentro do tenant. Para a Ecovias Imigrantes, a logo est�
 A síntese de voz usa a API nativa do navegador e prioriza vozes `pt-BR` com nomes femininos conhecidos quando disponíveis. Como o conjunto de vozes depende do sistema operacional e do navegador, existe fallback automático para outra voz brasileira.
 
 - Home refinada: sem status bar fictícia, maior respiro do agente IA e chips de sugestões posicionados após o campo de pergunta.
+
+## V6 · camada visual Figma
+
+A implementação V6 aplica o layout aprovado da tela Assistente sem reescrever a lógica do protótipo.
+
+Referências Figma usadas:
+- 313:2599 · Assistente ativo
+- 308:51 · Assistente inativo
+- 308:99 · resposta IA
+- 316:3468 · estados da navegação inferior
+
+Assets de marca locais:
+- `src/tenants/ecorodovias/images/ecovias-imigrantes/logo-horizontal.svg`
+- `src/tenants/ecorodovias/images/ecovias-imigrantes/ai-agent.gif`
+
+A bottom navigation agora contém Assistente, Alertas, Apoio, Serviços e Pedágio. Minha Ecovias é acessada pelo ícone de perfil no header.

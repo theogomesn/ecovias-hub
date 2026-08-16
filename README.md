@@ -82,3 +82,9 @@ Os assets visuais ficam dentro do tenant. Para a Ecovias Imigrantes, a logo est�
 A síntese de voz usa a API nativa do navegador e prioriza vozes `pt-BR` com nomes femininos conhecidos quando disponíveis. Como o conjunto de vozes depende do sistema operacional e do navegador, existe fallback automático para outra voz brasileira.
 
 - Home refinada: sem status bar fictícia, maior respiro do agente IA e chips de sugestões posicionados após o campo de pergunta.
+
+## Visual V6
+
+A tela Assistente foi atualizada para refletir o layout do Figma em 390 × 844 px, incluindo estados ativo/inativo, modal de resposta da IA, animação do agente, header e navegação inferior de cinco itens.
+
+A lógica funcional anterior permanece ativa. As demais telas continuam usando o layout funcional anterior até receberem seus layouts finais no Figma, mas já utilizam a nova navegação global.

@@ -1,4 +1,5 @@
 import concessionLogo from './images/ecovias-imigrantes/logo-horizontal.svg';
+import aiAgent from './images/ecovias-imigrantes/ai-agent.gif';
 
 export const tenantConfig = {
   id: 'ecorodovias',
@@ -7,15 +8,17 @@ export const tenantConfig = {
   systemName: 'Sistema Anchieta-Imigrantes',
   shortName: 'Ecovias',
   brandAssets: {
-    concessionLogo
+    concessionLogo,
+    aiAgent
   },
   theme: {
-    brand: '#0b6f35',
-    brandDark: '#0b2a18',
-    brandSoft: '#eaf6ed',
-    accent: '#b7ef52',
-    background: '#f4f7f4',
+    brand: '#056b28',
+    brandDark: '#10251a',
+    brandSoft: '#f7f9f7',
+    accent: '#72d216',
+    background: '#f7f9f7',
     text: '#10251a',
-    muted: '#5c6b62'
+    muted: '#405047',
+    border: '#dde5df'
   }
 };
