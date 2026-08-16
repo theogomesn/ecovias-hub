@@ -15,12 +15,23 @@ const money = value => value.toLocaleString('pt-BR', { style: 'currency', curren
 
 const statusLabel = status => ({ normal: 'Normal', slow: 'Lentidão', congested: 'Congestionamento' }[status] || 'Atenção');
 
+function pickBrazilianVoice() {
+  if (typeof window === 'undefined' || !window.speechSynthesis) return null;
+  const voices = window.speechSynthesis.getVoices();
+  const ptBr = voices.filter(voice => String(voice.lang || '').toLowerCase().replace('_', '-').startsWith('pt-br'));
+  const preferredFemaleNames = /(luciana|francisca|maria|camila|let[ií]cia|helena|bruna|feminina|female)/i;
+  return ptBr.find(voice => preferredFemaleNames.test(voice.name)) || ptBr[0] || voices.find(voice => String(voice.lang || '').toLowerCase().startsWith('pt')) || null;
+}
+
 function speakText(text) {
   if (typeof window === 'undefined' || !window.speechSynthesis) return;
   window.speechSynthesis.cancel();
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = 'pt-BR';
   utterance.rate = 0.96;
+  utterance.pitch = 1.04;
+  const voice = pickBrazilianVoice();
+  if (voice) utterance.voice = voice;
   window.speechSynthesis.speak(utterance);
 }
 
@@ -114,7 +125,7 @@ function Home({ setScreen, scenario, setScenarioId, tollHistory, services, autoP
   const inConcession = assistantEnabled && scenario.journeyActive;
 
   return <>
-    <div className="brand-row"><strong>{tenantConfig.shortName.toUpperCase()}</strong><button className="round" aria-label="Abrir menu"><Menu size={20}/></button></div>
+    <div className="brand-row"><img className="concession-logo" src={tenantConfig.brandAssets.concessionLogo} alt={tenantConfig.concessionName} /><button className="round" aria-label="Abrir menu"><Menu size={20}/></button></div>
     <div className="ai-agent-wrap" aria-hidden="true"><img src="/ai-agent.gif" alt="" /></div>
     <h1 className="hero-title">O que você precisa agora?</h1>
     <AssistantComposer {...{ scenario, tollHistory, services, autoPay, setScreen }} />
@@ -134,8 +145,7 @@ function Home({ setScreen, scenario, setScenarioId, tollHistory, services, autoP
     </section>
 
     <h3 className="section-title home-quick-title">Acesso rápido</h3>
-    <div className="quick-grid quick-grid-three">
-      <button onClick={startJourney}><span><Navigation/></span><strong>Assistente de viagem</strong><small>{assistantEnabled ? (scenario.journeyActive ? 'Viagem em andamento' : 'Iniciar acompanhamento') : 'Ative para acompanhar'}</small></button>
+    <div className="quick-grid quick-grid-two">
       <button onClick={() => setScreen('alerts')}><span><Bell/></span><strong>Alertas</strong><small>Condições e ocorrências</small></button>
       <button onClick={() => setScreen('services')}><span><MapPin/></span><strong>Serviços</strong><small>Posto, banheiro e mais</small></button>
     </div>

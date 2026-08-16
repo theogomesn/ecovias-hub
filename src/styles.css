@@ -117,3 +117,10 @@ button,input,select{font:inherit}button{cursor:pointer}
   .assistant-suggestions{margin-left:-20px;margin-right:-20px;padding-left:20px;padding-right:20px}
   .journey-metrics{gap:6px}.journey-metrics article{padding:10px 8px}.journey-metrics span{font-size:8px}.journey-metrics strong{font-size:14px}.journey-metrics small{font-size:9px}
 }
+
+/* V4 usability refinements */
+.brand-row{min-height:46px}
+.concession-logo{display:block;width:min(210px,58vw);height:38px;object-fit:contain;object-position:left center}
+.hero-title{text-align:center;margin-left:auto;margin-right:auto;max-width:330px}
+.quick-grid-two{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(max-width:380px){.concession-logo{width:min(190px,56vw)}.quick-grid-two{grid-template-columns:1fr 1fr}}

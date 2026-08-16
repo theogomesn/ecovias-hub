@@ -73,3 +73,10 @@ A Home agora incorpora o Assistente Ecovias diretamente, com entrada por texto/v
 ## Atualização do Modo Viagem
 
 A Home agora oferece chips de perguntas rápidas e o Assistente de Viagem possui estados Ativo/Inativo com fluxo de permissões. O Modo Viagem prioriza condição de trânsito por cor, operação de faixas, previsão de viagem, pista, condição por trecho e próximos eventos com leitura por voz.
+
+
+## Assets por concessão
+
+Os assets visuais ficam dentro do tenant. Para a Ecovias Imigrantes, a logo está em `src/tenants/ecorodovias/images/ecovias-imigrantes/logo-horizontal.svg`. Novas concessões devem ganhar uma subpasta própria dentro de `images`, e o `config.js` do tenant escolhe qual asset o core renderiza.
+
+A síntese de voz usa a API nativa do navegador e prioriza vozes `pt-BR` com nomes femininos conhecidos quando disponíveis. Como o conjunto de vozes depende do sistema operacional e do navegador, existe fallback automático para outra voz brasileira.

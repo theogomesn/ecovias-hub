@@ -38,3 +38,10 @@ npm run build
 ## Observação de produto
 
 O Figma continua sendo tratado como wireframe funcional. A camada visual final será aplicada futuramente por tenant/concessão sem alterar o core funcional.
+
+
+## Assets por concessão
+
+Os assets visuais ficam dentro do tenant. Para a Ecovias Imigrantes, a logo está em `src/tenants/ecorodovias/images/ecovias-imigrantes/logo-horizontal.svg`. Novas concessões devem ganhar uma subpasta própria dentro de `images`, e o `config.js` do tenant escolhe qual asset o core renderiza.
+
+A síntese de voz usa a API nativa do navegador e prioriza vozes `pt-BR` com nomes femininos conhecidos quando disponíveis. Como o conjunto de vozes depende do sistema operacional e do navegador, existe fallback automático para outra voz brasileira.
