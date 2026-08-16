@@ -168,14 +168,14 @@ button,input,select{font-family:inherit}
 .exact-icon-fallback[hidden],.figma-icon-fallback[hidden],[hidden]{display:none!important}
 
 .ai-agent-wrap-v6{position:absolute;left:50%;top:100px;transform:translateX(-50%);width:164px;height:164px;overflow:visible;border-radius:50%;background:transparent;isolation:isolate;--halo-scale:1.035;--halo-opacity:.14;--halo-blur:14px}
-.ai-agent-core{position:absolute;inset:0;z-index:3;overflow:hidden;border-radius:50%;background:#fff;box-shadow:0 8px 28px rgba(16,37,26,.08)}
-.ai-agent-core img{width:100%;height:100%;display:block;object-fit:cover}
+.ai-agent-core{position:absolute;inset:0;z-index:3;overflow:hidden;border-radius:50%;background:transparent;box-shadow:none}
+.ai-agent-core img{width:100%;height:100%;display:block;object-fit:cover;transform:scale(1.315);transform-origin:center;mix-blend-mode:multiply}
 .ai-agent-halo{position:absolute;left:50%;top:50%;width:100%;height:100%;border-radius:50%;pointer-events:none;opacity:0;transform:translate(-50%,-50%) scale(1);transition:opacity .16s ease,transform .1s linear,box-shadow .12s linear,border-color .12s linear;z-index:1}
-.ai-agent-halo.halo-inner{border:2px solid rgba(114,210,22,.58);box-shadow:0 0 18px rgba(114,210,22,.18),inset 0 0 12px rgba(114,210,22,.08)}
-.ai-agent-halo.halo-outer{width:108%;height:108%;z-index:0;border:1px solid rgba(5,107,40,.22);filter:blur(5px);box-shadow:0 0 30px rgba(114,210,22,.16)}
+.ai-agent-halo.halo-inner{background:transparent;border:2px solid rgba(114,210,22,.58);box-shadow:0 0 18px rgba(114,210,22,.18)}
+.ai-agent-halo.halo-outer{width:108%;height:108%;z-index:0;background:transparent;border:1px solid rgba(5,107,40,.22);filter:blur(5px);box-shadow:0 0 30px rgba(114,210,22,.16)}
 .ai-agent-wrap-v6.agent-listening .halo-inner{opacity:.2;animation:agent-halo-breathe 1.45s ease-in-out infinite}
 .ai-agent-wrap-v6.agent-listening .halo-outer{opacity:.11;animation:agent-halo-breathe-outer 1.45s ease-in-out infinite}
-.ai-agent-wrap-v6.agent-speaking .halo-inner{opacity:var(--halo-opacity);transform:translate(-50%,-50%) scale(var(--halo-scale));box-shadow:0 0 var(--halo-blur) rgba(114,210,22,.38),inset 0 0 14px rgba(114,210,22,.12)}
+.ai-agent-wrap-v6.agent-speaking .halo-inner{opacity:var(--halo-opacity);transform:translate(-50%,-50%) scale(var(--halo-scale));box-shadow:0 0 var(--halo-blur) rgba(114,210,22,.38)}
 .ai-agent-wrap-v6.agent-speaking .halo-outer{opacity:calc(var(--halo-opacity) * .62);transform:translate(-50%,-50%) scale(calc(var(--halo-scale) + .045));box-shadow:0 0 calc(var(--halo-blur) + 12px) rgba(5,107,40,.2)}
 .ai-agent-wrap-v6.agent-processing .halo-inner{opacity:.34;animation:agent-processing 1s ease-in-out infinite}
 .ai-agent-wrap-v6.agent-processing .halo-outer{opacity:.16;animation:agent-processing-outer 1s ease-in-out infinite}
@@ -271,3 +271,14 @@ button,input,select{font-family:inherit}
 .capture-mode .assistant-screen-content{padding:0!important;overflow:hidden!important}
 .capture-mode .screen-home .safe-area-top{display:none!important;height:0!important}
 .capture-mode .bottom-nav{left:0!important;right:0!important;bottom:0!important;width:390px!important}
+
+
+/* V10 mobile demo control: keep it away from the app header. */
+@media(max-width:760px){
+  .demo-panel.collapsed{
+    top:auto!important;
+    left:auto!important;
+    right:12px!important;
+    bottom:calc(92px + env(safe-area-inset-bottom))!important;
+  }
+}

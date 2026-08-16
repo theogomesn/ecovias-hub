@@ -73,3 +73,8 @@ A tela Assistente usa cinco estados visuais para a esfera: `idle`, `listening`, 
 - Only `.screen-content` scrolls on mobile, avoiding Chrome dynamic viewport jumps.
 - `Minha Ecovias` keeps the bottom navigation visible so the user can leave the account area through any primary tab.
 - Permissions remains the only flow without bottom navigation.
+
+## V10 mobile fixes
+- AI halo now has transparent center; the GIF is optically cropped with CSS and white pixels blend away so the outline/glow does not create a white disc.
+- Mobile speech recognition no longer opens a competing Web Audio microphone stream. Mobile uses SpeechRecognition speech events for the halo; desktop keeps real amplitude metering when supported.
+- Presentation control is moved to the lower-right above the bottom navigation on mobile, away from the hamburger menu.

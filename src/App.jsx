@@ -186,46 +186,90 @@ function AssistantComposer({ scenario, tollHistory, services, autoPay, setScreen
   const startVoice = async () => {
     if (!speechSupported || listening) return;
     voiceResultPendingRef.current = false;
-    onAgentStateChange('listening');
-    await startAudioMeter();
     const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     const recognition = new Recognition();
+    const mobileVoiceClient = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || '');
+
     recognition.lang = 'pt-BR';
     recognition.interimResults = true;
     recognition.continuous = false;
     recognition.maxAlternatives = 1;
+
     recognition.onstart = () => {
       setListening(true);
       onAgentStateChange('listening');
+      // Chrome mobile can stop SpeechRecognition when a second getUserMedia
+      // session opens. Keep the real amplitude meter as progressive enhancement
+      // on desktop and use native speech events on mobile.
+      if (!mobileVoiceClient) {
+        window.setTimeout(() => { startAudioMeter().catch(() => false); }, 100);
+      }
     };
+
+    recognition.onaudiostart = () => onAgentStateChange('listening');
+    recognition.onspeechstart = () => {
+      if (mobileVoiceClient) {
+        onVoiceLevelChange(.62);
+        onAgentStateChange('speaking');
+      }
+    };
+    recognition.onspeechend = () => {
+      if (mobileVoiceClient && !voiceResultPendingRef.current) {
+        onVoiceLevelChange(.16);
+        onAgentStateChange('listening');
+      }
+    };
+
     recognition.onend = () => {
       setListening(false);
-      stopAudioMeter({ keepAgentState: voiceResultPendingRef.current });
+      if (mobileVoiceClient) onVoiceLevelChange(0);
+      else stopAudioMeter({ keepAgentState: voiceResultPendingRef.current });
       if (!voiceResultPendingRef.current) onAgentStateChange('idle');
     };
-    recognition.onerror = () => {
+
+    recognition.onerror = event => {
+      console.warn('Speech recognition error:', event?.error || 'unknown');
       voiceResultPendingRef.current = false;
       setListening(false);
-      stopAudioMeter();
+      onVoiceLevelChange(0);
+      if (!mobileVoiceClient) stopAudioMeter();
+      else onAgentStateChange('idle');
     };
+
     recognition.onresult = event => {
-      const result = event.results?.[event.results.length - 1];
-      const spoken = result?.[0]?.transcript || '';
-      setQuery(spoken);
-      if (!result?.isFinal || !spoken.trim()) return;
+      let interimTranscript = '';
+      let finalTranscript = '';
+      for (let index = event.resultIndex || 0; index < event.results.length; index += 1) {
+        const result = event.results[index];
+        const text = result?.[0]?.transcript || '';
+        if (result?.isFinal) finalTranscript += text;
+        else interimTranscript += text;
+      }
+
+      const visibleTranscript = (finalTranscript || interimTranscript).trim();
+      if (visibleTranscript) setQuery(visibleTranscript);
+      if (!finalTranscript.trim() || voiceResultPendingRef.current) return;
+
       voiceResultPendingRef.current = true;
       setListening(false);
-      stopAudioMeter({ keepAgentState: true });
+      onVoiceLevelChange(0);
+      if (!mobileVoiceClient) stopAudioMeter({ keepAgentState: true });
       onAgentStateChange('processing');
+
+      const spoken = finalTranscript.trim();
       window.setTimeout(() => {
         ask(spoken);
         voiceResultPendingRef.current = false;
-      }, 420);
+      }, 320);
     };
+
     try {
+      onAgentStateChange('listening');
       recognition.start();
-    } catch {
+    } catch (error) {
+      console.warn('Unable to start speech recognition:', error);
       setListening(false);
+      onVoiceLevelChange(0);
       stopAudioMeter();
     }
   };

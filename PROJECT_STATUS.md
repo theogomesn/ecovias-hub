@@ -84,3 +84,6 @@ Os ícones exatos do layout são usados por URLs de exportação do Figma com fa
 ### V9
 - Fixed mobile bottom navigation displacement while scrolling.
 - Restored persistent primary navigation on Minha Ecovias.
+
+## V10
+Fixed mobile AI halo compositing, voice-query regression after Web Audio metering, and presentation-control overlap with the header menu.
